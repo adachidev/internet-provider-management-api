@@ -8,7 +8,7 @@ pipeline {
       steps{
         script {
           echo '....... Build docker Image .......'
-          dockerapp = docker.build("ldfibra/tio-ms:${env.BUILD_ID}", '-f ./Dockerfile ./')
+          dockerapp = docker.build("ldfibra/tio-ms", '-f ./Dockerfile ./')
         }
       }
     }
