@@ -12,4 +12,4 @@ COPY . .
 
 EXPOSE 3333
 
-CMD yarn start:prod
+CMD ["yarn", "start:prod"]

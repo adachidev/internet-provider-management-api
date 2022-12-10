@@ -4,27 +4,21 @@ pipeline {
   
   stages {
     
-    stage('Build Image'){
+    stage('Build docker Image'){
       steps{
         script {
-          echo 'Build Image...'          
+          echo '....... Build docker Image .......'
           dockerapp = docker.build("ldfibra/tio-ms:${env.BUILD_ID}", '-f ./Dockerfile ./')
         }
       }
     }
 
-    // stage('Push Image'){
-    //   steps{
-    //     script {
-    //       echo 'Push Image...'          
-    //       docker.withRegistry('https://registry.hub.docker.com', 'dockerhub'){
-    //         dockerapp.push('latest')
-    //         dockerapp.push("${env.BUILD_ID}")
-    //       }
-    //     }
-    //   }
-    // }
-
+    stage('Deploy App'){
+      steps{
+        echo '....... Deploy App .......'
+        sh "docker run -p 3002:3333 --name ldfibra/tio-ms -d ldfibra/tio-ms:${env.BUILD_ID}"
+      }
+    }
 
   }
 }
