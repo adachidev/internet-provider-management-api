@@ -6,7 +6,7 @@ pipeline {
         echo 'git clone...'
         git branch: 'master',
           credentialsId: 'git adachi.rodrigo@gmail.com',
-          url: 'https://github.com/rodrigoadachi/tio-ms.git'
+          url: 'https://github.com/rodrigoadachi/ldfibra-tio-ms.git'
         sh "ls -lat"
       }
     }
