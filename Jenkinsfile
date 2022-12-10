@@ -1,16 +1,16 @@
 pipeline {
   agent any
   stages {
+    stage('git clone'){
+      steps{
+        echo 'git clone...'
+        git credentialsId: 'git adachi.rodrigo@gmail.com', url: 'https://github.com/rodrigoadachi/tio-ms.git'
+      }
+    }
     stage('docker'){
-      environment {
-        // CREDENTIALS = credentials('node_8.12.1-alpine')
-      }
-      stage('git clone'){
-        steps{
-          echo 'git clone...'
-          git credentialsId: 'git adachi.rodrigo@gmail.com', url: 'https://github.com/rodrigoadachi/tio-ms.git'
-        }
-      }
+      //environment {
+      //   CREDENTIALS = credentials('node_8.12.1-alpine')
+      // }
       steps {
         script {
           //-u $CREDENTIALS_USR -p $CREDENTIALS_PSW
