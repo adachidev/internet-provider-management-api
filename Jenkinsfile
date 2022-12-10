@@ -1,14 +1,16 @@
 pipeline {
-  agent { dockerfile true}
-  stages{
-    stage('Git Checkout'){
+  agent { dockerfile true }
+  stages {
+    stage('build'){
       steps{
+        echo 'clone git...'
         git credentialsId: 'git adachi.rodrigo@gmail.com', url: 'https://github.com/rodrigoadachi/ldfibra-tio-ms.git'
       }
     }
-    stage('Build'){
+    stage('run') {
       steps{
-        sh 'node -v'
+        echo 'run...'
+        sh 'npm run start:prod'
       }
     }
   }
