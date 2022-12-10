@@ -6,9 +6,11 @@ COPY package*.json ./
 
 RUN node -v
 
-RUN yarn install
+RUN yarn
 
 COPY . .
+
+RUN yarn build
 
 EXPOSE 3333
 
