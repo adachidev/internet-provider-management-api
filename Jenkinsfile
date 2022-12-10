@@ -4,7 +4,7 @@ pipeline {
     stage('git clone'){
       steps{
         echo 'git clone...'
-        git credentialsId: 'git adachi.rodrigo@gmail.com', url: 'https://github.com/rodrigoadachi/tio-ms.git'
+        git branch: 'master', credentialsId: 'git adachi.rodrigo@gmail.com', url: 'https://github.com/rodrigoadachi/tio-ms.git'
       }
     }
     stage('docker'){
