@@ -2,6 +2,15 @@ pipeline {
   
   agent any
   
+  environment {
+    API_PORT="3002"
+    LD_MONGO_USER="ldfibra"
+    LD_MONGO_PASS="ldfibra"
+    LD_MONGO_URL="191.252.201.33"
+    LD_MONGO_PORT="27017"
+    LD_MONGO_DB="ldfibra-tio"
+  }
+
   stages {
     
     stage('Build docker Image'){
