@@ -4,7 +4,10 @@ pipeline {
     stage('git clone'){
       steps{
         echo 'git clone...'
-        git branch: 'master', credentialsId: 'git adachi.rodrigo@gmail.com', url: 'https://github.com/rodrigoadachi/tio-ms.git'
+        git branch: 'master',
+          credentialsId: 'git adachi.rodrigo@gmail.com',
+          url: 'https://github.com/rodrigoadachi/tio-ms.git'
+        sh "ls -lat"
       }
     }
     stage('docker'){
@@ -22,6 +25,12 @@ pipeline {
           sh 'docker tag ldfibra/tio-ms:master ldfibra/tio-ms:current'
           sh 'docker run -d --name ldfibra-tio-ms -p 3333:3333 ldfibra/tio-ms:current'
         }
+      }
+    }
+
+    stage('Checkout code') {
+      steps {
+          checkout scm
       }
     }
     // stage('build') {
