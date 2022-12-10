@@ -25,7 +25,7 @@ pipeline {
     stage('Deploy App'){
       steps{
         echo '....... Deploy App .......'
-        sh 'docker run -p 3002:3333 --name ldfibra-tio-ms -d ldfibra-tio-ms:latest --restart unless-stopped'
+        sh 'docker run -p 3002:3333 --name ldfibra-tio-ms -d ldfibra-tio-ms:latest --restart=unless-stopped'
       }
     }
 
