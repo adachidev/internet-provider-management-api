@@ -24,4 +24,3 @@ const mongoData = process.env.LD_MONGO_USER
   providers: [],
 })
 export class AppModule {}
-
