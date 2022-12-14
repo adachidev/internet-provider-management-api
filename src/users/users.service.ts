@@ -1,15 +1,18 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User, UserDocument } from './entities/user.entity';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UsersService {
   constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
 
-  async create(userId: any, createUserDto: CreateUserDto) {
+  async create(userId: any, createUserDto: CreateUserDto): Promise<User> {
+    const isExists = await this.getByUsername(createUserDto.username);
+    // if (isExists) throw new NotFoundException('User exists');
     const user = new this.userModel(createUserDto);
     user.enable = true;
     user.createdAt = new Date();
@@ -17,6 +20,7 @@ export class UsersService {
     user.updatedAt = new Date();
     user.userUpdatedId = userId;
     user.status = 3;
+    user.password = await bcrypt.hash(createUserDto.password, 10);
     const result = await user.save();
     return result;
   }
@@ -40,6 +44,7 @@ export class UsersService {
   async update(userId: any, id: any, updateUserDto: UpdateUserDto) {
     updateUserDto.updatedAt = new Date();
     updateUserDto.userUpdatedId = userId;
+    if (!!updateUserDto.password) updateUserDto.password = await bcrypt.hash(updateUserDto.password, 10);
     const result = await this.userModel.findByIdAndUpdate(id, updateUserDto, {
       new: true,
     });
