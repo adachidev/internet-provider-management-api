@@ -1,17 +1,15 @@
 export class CreateUserDto {
   email: string;
-  phone1: string;
-  isWaPhone1: boolean;
-  isAdmPhone1: boolean;
-  phone2: string;
-  isWaPhone2: boolean;
-  isAdmPhone2: boolean;
+  phone: string;
+  isWaPhone: boolean;
   firstName: string;
   midName: string;
   lastName: string;
   enable: boolean;
   username: string;
   password: string;
+  status?: number;
+  code?: string;
   accessLevel: string;
   observation: string;
   createdAt: Date;

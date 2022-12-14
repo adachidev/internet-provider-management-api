@@ -11,20 +11,30 @@ export class UsersService {
 
   async create(userId: any, createUserDto: CreateUserDto) {
     const user = new this.userModel(createUserDto);
+    user.enable = true;
     user.createdAt = new Date();
     user.userCreatedId = userId;
     user.updatedAt = new Date();
     user.userUpdatedId = userId;
+    user.status = 3;
     const result = await user.save();
     return result;
   }
 
   async findAll() {
-    return this.userModel.find();
+    return await this.userModel.find();
   }
 
-  async findOne(id: any) {
-    return this.userModel.findById(id);
+  async getById(id: string) {
+    return await this.userModel.findById(id);
+  }
+
+  async getByEmail(email: string) {
+    return await this.userModel.findOne({ email });
+  }
+
+  async getByUsername(username: string) {
+    return await this.userModel.findOne({ username });
   }
 
   async update(userId: any, id: any, updateUserDto: UpdateUserDto) {

@@ -1,3 +1,4 @@
+import { AuthModule } from './auth/auth.module';
 import * as dotenv from 'dotenv';
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
@@ -14,6 +15,7 @@ const mongoData = process.env.LD_MONGO_USER
 
 @Module({
   imports: [
+    AuthModule,
     MongooseModule.forRoot(mongoData),
     ClientsModule,
     PlansModule,
@@ -23,4 +25,4 @@ const mongoData = process.env.LD_MONGO_USER
   controllers: [],
   providers: [],
 })
-export class AppModule {}
+export class AppModule { }

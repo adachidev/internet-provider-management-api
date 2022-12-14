@@ -9,22 +9,13 @@ export class User {
   email: string;
 
   @Prop({ required: true })
-  phone1: string;
+  phone: string;
 
   @Prop()
-  isWaPhone1: boolean;
+  isWaPhone: boolean;
 
   @Prop()
-  isAdmPhone1: boolean;
-
-  @Prop()
-  phone2: string;
-
-  @Prop()
-  isWaPhone2: boolean;
-
-  @Prop()
-  isAdmPhone2: boolean;
+  isAdmPhone: boolean;
 
   @Prop({ required: true })
   firstName: string;
@@ -43,6 +34,12 @@ export class User {
 
   @Prop({ required: true })
   password: string;
+
+  @Prop({ required: true, default: 3 })
+  status: number;
+
+  @Prop({ required: false, default: '' })
+  code: string;
 
   @Prop({ default: 'user' })
   accessLevel: string;
