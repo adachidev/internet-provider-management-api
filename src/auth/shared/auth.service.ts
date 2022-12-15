@@ -3,6 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from 'src/users/users.service';
 import * as bcrypt from 'bcrypt';
+import { jwtConstants } from './constants';
 
 dotenv.config();
 
@@ -39,10 +40,8 @@ export class AuthService {
     };
   }
 
-  async profile(data: any): Promise<any> {
-    console.log('[profile]',data)
-    //const user = await this.usersService.getById('639919ea1bcf5033004c5386');
-    return null
+  async profile(token: string): Promise<any> {
+    return this.jwtService.decode(token)
   }
 
   async refreshToken(token: string): Promise<any> {

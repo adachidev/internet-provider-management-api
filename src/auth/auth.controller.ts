@@ -9,6 +9,7 @@ import {
   Get,
   Body,
 } from '@nestjs/common';
+import { JwtAuthGuard } from './shared/jwt-auth.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -20,14 +21,13 @@ export class AuthController {
     return this.authService.login(req.user);
   }
 
-  @UseGuards(LocalAuthGuard)
+  @UseGuards(JwtAuthGuard)
   @Get('profile')
   async profile(@Body() data: any) {
-    console.log('[profile]',data)
-    return this.authService.profile(data);
+    return this.authService.profile(data.token);
   }
 
-  @UseGuards(LocalAuthGuard)
+  @UseGuards(JwtAuthGuard)
   @Post('refresh-token')
   refreshToken(@Query('token') token: string) {
     return this.authService.refreshToken(token);
