@@ -14,7 +14,7 @@ import { User } from '../entities/user.entity';
 
 //https://github.com/typestack/class-validator
 
-export class CreateUserDto extends User {
+export class CreateUserDto {
   @IsEmail()
   email: string;
 
