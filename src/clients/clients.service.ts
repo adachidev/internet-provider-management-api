@@ -17,6 +17,7 @@ export class ClientsService {
   ) {}
 
   async create(userId: any, createClientDto: CreateClientDto) {
+    console.log('[clients - create]',{userId,createClientDto})
     const isExists = await this.clientModel.findOne({
       clientId: createClientDto.clientId,
     });
@@ -30,13 +31,13 @@ export class ClientsService {
     client.userUpdatedId = userId;
     client.enable = true;
     client.connected = false;
-    const firstName = client.firstName.toLowerCase().replace(/^\s+|\s+$/gm, '');
-    const lastName = client.lastName.toLowerCase().replace(/^\s+|\s+$/gm, '');
+    const firstName = client.firstName//.toLowerCase().replace(/^\s+|\s+$/gm, '');
+    const lastName = client.lastName//.toLowerCase().replace(/^\s+|\s+$/gm, '');
     client.username = `${firstName}.${lastName}`;
-    client.password = client.phone1.replace(/^\s+|\s+$/gm, '');
-
+    client.password = client.phone1//.replace(/^\s+|\s+$/gm, '');
+    console.log('clients create client]',client)
     const result = await client.save();
-
+    console.log('clients create result]',result)
     movement.clientId = result._id;
     movement.newPlanId = result.plan;
     movement.reason = 'Cadastro de cliente';
