@@ -7,6 +7,8 @@ import { PlansModule } from './plans/plans.module';
 import { MovementsModule } from './movements/movements.module';
 import { UsersModule } from './users/users.module';
 import { WaModule } from './wa/wa.module';
+import { BoxModule } from './box/box.module';
+import { ConnectionsModule } from './connections/connections.module';
 
 dotenv.config();
 
@@ -23,6 +25,8 @@ const mongoData = process.env.LD_MONGO_USER
     MovementsModule,
     UsersModule,
     WaModule,
+    BoxModule,
+    ConnectionsModule,
   ],
   controllers: [],
   providers: [],
