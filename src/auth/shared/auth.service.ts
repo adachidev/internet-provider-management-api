@@ -16,7 +16,11 @@ export class AuthService {
 
   async validateUser(userName: string, userPassword: string) {
     const user = await this.usersService.getByUsername(userName);
+    if (!user) return { error: 'INVALID_USERNAME'}
+
     const isPasswordValid = await bcrypt.compare(userPassword, user.password);
+    if (user && !isPasswordValid) return { error: 'INVALID_PASSWORD'}
+
     if (user && isPasswordValid) {
       const { _id, username, firstName, lastName, email } = user;
       return { id: _id, username, firstName, lastName, email };

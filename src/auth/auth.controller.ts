@@ -24,6 +24,7 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   @Get('profile')
   async profile(@Body() data: any) {
+    console.log('[profile]')
     return this.authService.profile(data.token);
   }
 
