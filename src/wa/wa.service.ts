@@ -6,8 +6,9 @@ dotenv.config();
 
 const instance = axios.create({
   baseURL: process.env.WA_URL,
-  timeout: 3000,
+  timeout: 5000,
   headers: {
+    accept: 'application/json',
     'X-Api-Key': process.env.WA_PASS,
     'Content-Type': 'application/json',
   },
