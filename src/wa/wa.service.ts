@@ -39,15 +39,22 @@ export class WaService {
 
     if (token != process.env.WA_PASS) return 'TOKEN_ERROR';
     console.log('[sendText ]', phoneNumber);
-    const response = await instance.post(
-      '/api/sendText',
-      JSON.stringify({
-        chatId: `${phoneNumber}@c.us`,
-        text: message,
-        session: 'default',
-      }),
-    );
-    console.log('[sendText RES]', response.data);
-    return JSON.parse(JSON.stringify(response.data));
+    await instance
+      .post(
+        '/api/sendText',
+        JSON.stringify({
+          chatId: `${phoneNumber}@c.us`,
+          text: message,
+          session: 'default',
+        }),
+      )
+      .then((response) => {
+        console.log('[sendText RES]', response.data);
+        return JSON.parse(JSON.stringify(response.data));
+      })
+      .catch((error) => {
+        console.log('[sendText ERROR]', error);
+        return error;
+      });
   }
 }
