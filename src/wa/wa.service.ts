@@ -6,7 +6,7 @@ dotenv.config();
 
 const instance = axios.create({
   baseURL: process.env.WA_URL,
-  timeout: 5000,
+  timeout: 10000,
   headers: {
     accept: 'application/json',
     'X-Api-Key': process.env.WA_PASS,
@@ -39,7 +39,7 @@ export class WaService {
         : phoneNumber;
 
     if (token != process.env.WA_PASS) return 'TOKEN_ERROR';
-    console.log('[sendText ]', phoneNumber);
+
     await instance
       .post(
         '/api/sendText',
@@ -50,11 +50,9 @@ export class WaService {
         }),
       )
       .then((response) => {
-        console.log('[sendText RES]', response.data);
         return JSON.parse(JSON.stringify(response.data));
       })
       .catch((error) => {
-        console.log('[sendText ERROR]', error);
         return error;
       });
   }
