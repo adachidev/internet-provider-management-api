@@ -38,7 +38,7 @@ export class WaService {
         : phoneNumber;
 
     if (token != process.env.WA_PASS) return 'TOKEN_ERROR';
-
+    console.log('[sendText ]', phoneNumber);
     const response = await instance.post(
       '/api/sendText',
       JSON.stringify({
@@ -47,7 +47,7 @@ export class WaService {
         session: 'default',
       }),
     );
-
+    console.log('[sendText RES]', response.data);
     return JSON.parse(JSON.stringify(response.data));
   }
 }
