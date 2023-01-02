@@ -40,20 +40,24 @@ export class WaService {
 
     if (token != process.env.WA_PASS) return 'TOKEN_ERROR';
 
-    await instance
-      .post(
-        '/api/sendText',
-        JSON.stringify({
-          chatId: `${phoneNumber}@c.us`,
-          text: message,
-          session: 'default',
-        }),
-      )
-      .then((response) => {
-        return JSON.parse(JSON.stringify(response.data));
-      })
-      .catch((error) => {
-        return error;
-      });
+    const response = await instance.post(
+      '/api/sendText',
+      JSON.stringify({
+        chatId: `${phoneNumber}@c.us`,
+        text: message,
+        session: 'default',
+      }),
+    );
+    // .then((response) => {
+    //   console.log(response.status);
+    //   if (response.status === 201) return 'SEND_OK';
+    //   else return 'SEND_NOK';
+    //   // return JSON.parse(JSON.stringify(response.data));
+    // })
+    // .catch((error) => {
+    //   return 'SEND_ERROR';
+    // });
+    if (response.status === 201) return 'SEND_OK';
+    else return 'SEND_NOK';
   }
 }
