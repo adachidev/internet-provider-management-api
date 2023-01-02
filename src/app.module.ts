@@ -12,9 +12,9 @@ import { ConnectionsModule } from './connections/connections.module';
 
 dotenv.config();
 
-const mongoData = process.env.LD_MONGO_USER
-  ? `mongodb://${process.env.LD_MONGO_USER}:${process.env.LD_MONGO_PASS}@${process.env.LD_MONGO_URL}:${process.env.LD_MONGO_PORT}/${process.env.LD_MONGO_DB}`
-  : `mongodb://${process.env.LD_MONGO_URL}:${process.env.LD_MONGO_PORT}/${process.env.LD_MONGO_DB}`;
+const mongoData = process.env.MONGO_USER
+  ? `mongodb://${process.env.MONGO_USER}:${process.env.MONGO_PASS}@${process.env.MONGO_URL}:${process.env.MONGO_PORT}/${process.env.MONGO_DB}`
+  : `mongodb://${process.env.MONGO_URL}:${process.env.MONGO_PORT}/${process.env.MONGO_DB}`;
 
 @Module({
   imports: [

@@ -11,10 +11,13 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { Interceptor } from 'src/Interceptor';
+import { WaService } from './wa.service';
 
-@UseInterceptors(Interceptor)
+// @UseInterceptors(Interceptor)
 @Controller('wa')
 export class WaController {
+  constructor(private readonly waService: WaService) {}
+
   @Get()
   findAll() {
     console.log('[GET]');
@@ -23,7 +26,6 @@ export class WaController {
 
   @Post()
   create(@Body() body: any) {
-    console.log('[POST]', { body });
-    return null;
+    return this.waService.sendText(body.celular, body.mensagem, body.token);
   }
 }

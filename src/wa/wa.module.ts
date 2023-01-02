@@ -6,6 +6,5 @@ import { WaService } from './wa.service';
   imports: [],
   controllers: [WaController],
   providers: [WaService],
-  exports: [WaService],
 })
 export class WaModule {}
