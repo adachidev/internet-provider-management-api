@@ -1,22 +1,23 @@
-import axios from 'axios';
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable, HttpStatus } from '@nestjs/common';
+import { HttpService } from '@nestjs/axios';
 import * as dotenv from 'dotenv';
+import { catchError, lastValueFrom, map, tap } from 'rxjs';
 
 dotenv.config();
 
-const instance = axios.create({
-  baseURL: process.env.WA_URL,
-  timeout: 10000,
-  headers: {
-    accept: 'application/json',
-    'X-Api-Key': process.env.WA_PASS,
-    'Content-Type': 'application/json',
-  },
-});
+// const instance = axios.create({
+//   baseURL: process.env.WA_URL,
+//   timeout: 10000,
+//   headers: {
+//     accept: 'application/json',
+//     'X-Api-Key': process.env.WA_PASS,
+//     'Content-Type': 'application/json',
+//   },
+// });
 
 @Injectable()
 export class WaService {
-  constructor() {}
+  constructor(private readonly httpService: HttpService) {}
 
   async sendText(phone: string, message: string, token: string) {
     let phoneNumber = phone.replace(/\D/gim, '');
@@ -40,24 +41,24 @@ export class WaService {
 
     if (token != process.env.WA_PASS) return 'TOKEN_ERROR';
 
-    const response = await instance.post(
-      '/api/sendText',
-      JSON.stringify({
-        chatId: `${phoneNumber}@c.us`,
-        text: message,
-        session: 'default',
-      }),
+    const url = `${process.env.WA_URL}/api/sendText`;
+    // const request = await lastValueFrom(
+    const config = {
+      headers: {
+        'X-Api-Key': process.env.WA_PASS,
+      },
+    };
+
+    const data = {
+      chatId: `${phoneNumber}@c.us`,
+      text: message,
+      session: 'default',
+    };
+
+    const response = await lastValueFrom(
+      this.httpService.post(url, data, config),
     );
-    // .then((response) => {
-    //   console.log(response.status);
-    //   if (response.status === 201) return 'SEND_OK';
-    //   else return 'SEND_NOK';
-    //   // return JSON.parse(JSON.stringify(response.data));
-    // })
-    // .catch((error) => {
-    //   return 'SEND_ERROR';
-    // });
-    if (response.status === 201) return 'SEND_OK';
-    else return 'SEND_NOK';
+
+    return response.status === HttpStatus.ACCEPTED;
   }
 }

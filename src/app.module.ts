@@ -9,6 +9,7 @@ import { UsersModule } from './users/users.module';
 import { WaModule } from './wa/wa.module';
 import { BoxModule } from './box/box.module';
 import { ConnectionsModule } from './connections/connections.module';
+import { FinancialModule } from './financial/financial.module';
 
 dotenv.config();
 
@@ -27,6 +28,7 @@ const mongoData = process.env.MONGO_USER
     WaModule,
     BoxModule,
     ConnectionsModule,
+    FinancialModule,
   ],
   controllers: [],
   providers: [],
