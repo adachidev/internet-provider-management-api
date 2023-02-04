@@ -10,7 +10,9 @@ export class PlansService {
   constructor(@InjectModel(Plan.name) private planModel: Model<PlanDocument>) {}
 
   create(createPlanDto: CreatePlanDto) {
+    console.log('[createPlanDto]', createPlanDto);
     const plan = new this.planModel(createPlanDto);
+    console.log('[plan]', plan);
     return plan.save();
   }
 

@@ -20,6 +20,7 @@ export class PlansController {
   @UseGuards(JwtAuthGuard)
   @Post()
   create(@Body() createPlanDto: CreatePlanDto) {
+    console.log('[createPlanDto]', createPlanDto);
     return this.plansService.create(createPlanDto);
   }
 

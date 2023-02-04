@@ -12,7 +12,7 @@ export class UsersService {
 
   async create(userId: any, createUserDto: CreateUserDto): Promise<User> {
     const isExists = await this.getByUsername(createUserDto.username);
-    // if (isExists) throw new NotFoundException('User exists');
+    if (isExists) throw new NotFoundException('User exists');
     const user = new this.userModel(createUserDto);
     user.enable = true;
     user.createdAt = new Date();
@@ -44,7 +44,8 @@ export class UsersService {
   async update(userId: any, id: any, updateUserDto: UpdateUserDto) {
     updateUserDto.updatedAt = new Date();
     updateUserDto.userUpdatedId = userId;
-    if (!!updateUserDto.password) updateUserDto.password = await bcrypt.hash(updateUserDto.password, 10);
+    if (!!updateUserDto.password)
+      updateUserDto.password = await bcrypt.hash(updateUserDto.password, 10);
     const result = await this.userModel.findByIdAndUpdate(id, updateUserDto, {
       new: true,
     });

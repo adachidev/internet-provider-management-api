@@ -52,5 +52,4 @@ export class UsersController {
   remove(@Query('userId') userId: any, @Param('id') id: any) {
     return this.usersService.remove(userId, id);
   }
- 
 }

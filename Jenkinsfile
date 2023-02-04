@@ -46,4 +46,13 @@ pipeline {
     }
 
   }
+  
+  post {
+    success {
+      mail to: 'adachi.rodrigo@gmail.com', subject: 'Pipeline success', body: "${env.BUILD_URL}"
+    }
+		failure {
+			mail to: 'adachi.rodrigo@gmail.com', subject: 'Pipeline failed', body: "${env.BUILD_URL}"
+		}
+	}
 }
