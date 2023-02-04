@@ -1,8 +1,12 @@
 import * as dotenv from 'dotenv';
-import { Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import { CreateFinancialDto } from './dto/create-financial.dto';
 import { UpdateFinancialDto } from './dto/update-financial.dto';
 import { HttpService } from '@nestjs/axios';
+import { lastValueFrom } from 'rxjs';
+import { readFileSync } from 'fs';
+import { Agent } from 'https';
+import { resolve } from 'path';
 
 dotenv.config();
 
@@ -11,22 +15,32 @@ export class FinancialService {
   constructor(private readonly httpService: HttpService) {}
 
   async credentials(): Promise<any> {
-    const endpoint = process.env.GERNET_API;
-
     const credentials = Buffer.from(
       `${process.env.GERNET_CLIENT_ID}: ${process.env.GERNET_CLIENT_SECRET}`,
     ).toString('base64');
 
-    return this.httpService.post(
-      `${endpoint}/oauth/token`,
-      { grant_type: 'client_credentials' },
-      {
-        headers: {
-          Authorization: `Basic ${credentials}`,
-          'Content-Type': 'application/json',
-        },
+    const httpsAgent = new Agent({
+      pfx: readFileSync(
+        resolve(__dirname, `../../cert/${process.env.GERNET_CERT}`),
+      ),
+      passphrase: '',
+    });
+
+    const url = `${process.env.GERNET_API}/oauth/token`;
+    const data = { grant_type: 'client_credentials' };
+    const config = {
+      headers: {
+        Authorization: `Basic ${credentials}`,
+        'Content-Type': 'application/json',
       },
+      httpsAgent,
+    };
+
+    const response = await lastValueFrom(
+      this.httpService.post(url, data, config),
     );
+    console.log(response.data);
+    return response.status === HttpStatus.ACCEPTED;
   }
 
   create(createFinancialDto: CreateFinancialDto) {
