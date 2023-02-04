@@ -13,14 +13,15 @@ import { FinancialModule } from './financial/financial.module';
 
 dotenv.config();
 
-const mongoData = process.env.MONGO_USER
-  ? `mongodb://${process.env.MONGO_USER}:${process.env.MONGO_PASS}@${process.env.MONGO_URL}:${process.env.MONGO_PORT}/${process.env.MONGO_DB}`
-  : `mongodb://${process.env.MONGO_URL}:${process.env.MONGO_PORT}/${process.env.MONGO_DB}`;
-
 @Module({
   imports: [
     AuthModule,
-    MongooseModule.forRoot(mongoData),
+    MongooseModule.forRoot(
+      `mongodb://${process.env.MONGO_USER}:${process.env.MONGO_PASS}@${process.env.MONGO_URL}:${process.env.MONGO_PORT}`,
+      {
+        dbName: process.env.MONGO_DB,
+      },
+    ),
     ClientsModule,
     PlansModule,
     MovementsModule,
@@ -33,4 +34,4 @@ const mongoData = process.env.MONGO_USER
   controllers: [],
   providers: [],
 })
-export class AppModule { }
+export class AppModule {}
