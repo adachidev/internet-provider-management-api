@@ -40,6 +40,7 @@ export class FinancialService {
       this.httpService.post(url, data, config),
     );
     console.log(response.data);
+    // OK
     return response.status === HttpStatus.ACCEPTED;
   }
 
