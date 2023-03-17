@@ -51,36 +51,45 @@ export class MikrotikService implements OnModuleInit {
               : 'Access-Reject';
 
           const velocid = `${client.plan.upload}M/${client.plan.download}M`;
-          const attrs = [
-            ['NAS-Port-Type', packet.attributes['NAS-Port-Type']],
-            ['Calling-Station-Id', packet.attributes['Calling-Station-Id']],
-            ['Called-Station-Id', packet.attributes['Called-Station-Id']],
-            ['NAS-Port-Id', packet.attributes['NAS-Port-Id']],
-            ['User-Name', packet.attributes['User-Name']],
-            ['NAS-Port', packet.attributes['NAS-Port']],
-            // ['Acct-Session-Id', packet.attributes['Acct-Session-Id']],
-            // ['Framed-IP-Address', packet.attributes['Framed-IP-Address']],
-            ['User-Password', packet.attributes['User-Password']],
-            ['Service-Type', packet.attributes['Service-Type']],
-            ['NAS-Identifier', packet.attributes['NAS-Identifier']],
-            ['NAS-IP-Address', packet.attributes['NAS-IP-Address']],
-            [
-              'Vendor-Specific',
-              'Mikrotik',
-              [
-                ['Mikrotik-Host-IP', packet.attributes['NAS-IP-Address']],
-                ['Mikrotik-Rate-Limit', velocid],
-              ],
-            ],
-          ];
+
+          // https://wiki.mikrotik.com/wiki/Manual:RADIUS_Client/vendor_dictionary
+          // ['NAS-Port-Type', packet.attributes['NAS-Port-Type']],
+          // ['Calling-Station-Id', packet.attributes['Calling-Station-Id']],
+          // ['Called-Station-Id', packet.attributes['Called-Station-Id']],
+          // ['NAS-Port-Id', packet.attributes['NAS-Port-Id']],
+          // ['User-Name', packet.attributes['User-Name']],
+          // ['NAS-Port', packet.attributes['NAS-Port']],
+          // // ['Acct-Session-Id', packet.attributes['Acct-Session-Id']],
+          // // ['Framed-IP-Address', packet.attributes['Framed-IP-Address']],
+          // ['User-Password', packet.attributes['User-Password']],
+          // ['Service-Type', packet.attributes['Service-Type']],
+          // ['NAS-Identifier', packet.attributes['NAS-Identifier']],
+          // ['NAS-IP-Address', packet.attributes['NAS-IP-Address']],
+          // [
+          //   'Vendor-Specific',
+          //   'Mikrotik',
+          //   [
+          //     ['Mikrotik-Host-IP', packet.attributes['NAS-IP-Address']],
+          //     ['Mikrotik-Rate-Limit', velocid],
+          //   ],
+          // ],
 
           const response = radius.encode_response({
-            packet: packet,
-            code: code,
+            packet,
+            code,
             secret: this.secret,
-            // attributes: attrs,
-            // identifier: packet.identifier,
-            // authenticator?: packet?.authenticator
+            attributes: [
+              ['User-Name', packet.attributes['User-Name']],
+              ['NAS-Port', packet.attributes['NAS-Port']],
+              [
+                'Vendor-Specific',
+                'Mikrotik',
+                [
+                  ['Mikrotik-Host-IP', '10.20.10.1'], //packet.attributes['NAS-IP-Address']],
+                  ['Mikrotik-Rate-Limit', velocid],
+                ],
+              ],
+            ],
           });
 
           // const res = await radius.decode({ packet: response, secret: secret });
