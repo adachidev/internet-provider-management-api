@@ -16,7 +16,7 @@ export class MikrotikService implements OnModuleInit {
   private server = createSocket('udp4');
 
   onModuleInit() {
-    radius.add_dictionary(__dirname + '/dictionary.mikrotik');
+    radius.add_dictionary('public/dictionary.mikrotik');
     this.onStart();
   }
 
@@ -46,12 +46,13 @@ export class MikrotikService implements OnModuleInit {
         // const client = await ms.get(`/clients/${username}/username`);
         // console.log(client)
         // if (!client.data) return
-        // (username == client.data.username && password == client.data.password)
-        //   ? code = 'Access-Accept'
-        //   : code = 'Access-Reject'
-        code = 'Access-Reject';
-        const velocid = '1M';
-        // let velocid = `${client.data.plan.upload}M/${client.data.plan.download}M`
+        const code =
+          username == client.username && password == client.password
+            ? 'Access-Accept'
+            : 'Access-Reject';
+        // code = 'Access-Reject';
+        // const velocid = '1M';
+        const velocid = `${client.plan.upload}M/${client.plan.download}M`;
         const attrs = [
           ['NAS-Port-Type', packet.attributes['NAS-Port-Type']],
           ['Calling-Station-Id', packet.attributes['Calling-Station-Id']],
