@@ -11,6 +11,7 @@ import { BoxModule } from './box/box.module';
 import { ConnectionsModule } from './connections/connections.module';
 import { FinancialModule } from './financial/financial.module';
 import { MikrotikModule } from './mikrotik/mikrotik.module';
+import { ServeStaticModule } from '@nestjs/serve-static';
 
 dotenv.config();
 
