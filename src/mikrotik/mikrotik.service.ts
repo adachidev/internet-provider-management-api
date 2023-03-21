@@ -4,6 +4,7 @@ import * as dotenv from 'dotenv';
 import { createSocket } from 'node:dgram';
 import { ClientsService } from 'src/clients/clients.service';
 import { iPacket } from './dto/mikrotik.dto';
+import * as md5 from 'md5';
 
 dotenv.config();
 
@@ -37,14 +38,23 @@ export class MikrotikService implements OnModuleInit {
         if (packet.code === 'Access-Request') {
           const username = packet.attributes['User-Name'];
           const password = packet.attributes['User-Password'];
+          /* -- RECEIVE
+          'Service-Type': 'Framed-User',
+          'Framed-Protocol': 'PPP',
+          'NAS-Port': 15728650,
+          'NAS-Port-Type': 'Ethernet',
+          'User-Name': 'Rodrigo.Adachi',
+          'Calling-Station-Id': 'EC:F4:BB:FA:36:C9',
+          'Called-Station-Id': '2-pppoe',
+          'NAS-Port-Id': '2-Client',
+          'Acct-Session-Id': '81600009',
+          'Vendor-Specific': {},
+          'NAS-Identifier': 'MikroTik',
+          'NAS-IP-Address': '192.168.1.254'
+          */
 
           const client = await this.clientsService.findUserName(username);
-          console.log({
-            username,
-            clientU: client.username,
-            password,
-            clientP: client.password,
-          });
+
           const code =
             username == client.username && password == client.password
               ? 'Access-Accept'
@@ -73,11 +83,17 @@ export class MikrotikService implements OnModuleInit {
           //     ['Mikrotik-Rate-Limit', velocid],
           //   ],
           // ],
+          const challenge = 'aa';
+          const chapPassword = md5(client.username + challenge);
 
           const response = radius.encode_response({
             packet,
             code,
             secret: this.secret,
+            chap: {
+              password: client.password,
+              challenge,
+            },
             attributes: [
               ['User-Name', packet.attributes['User-Name']],
               ['NAS-Port', packet.attributes['NAS-Port']],
