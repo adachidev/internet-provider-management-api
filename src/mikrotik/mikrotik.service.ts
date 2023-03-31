@@ -5,6 +5,8 @@ import { createSocket } from 'node:dgram';
 import { ClientsService } from 'src/clients/clients.service';
 import { iPacket } from './dto/mikrotik.dto';
 import * as md5 from 'md5';
+import { CHAP, MSCHAPv1 } from 'chap';
+import * as crypto from 'crypto';
 
 dotenv.config();
 
@@ -21,7 +23,27 @@ export class MikrotikService implements OnModuleInit {
     this.onStart();
   }
 
+  getAtributes(object: any, key: number) {
+    return object.filter(el=> el.key === 1)[0].data || null
+  }
+
+  bufferToString(buffer: Buffer) {
+    return Buffer.from(buffer).toString()
+  }
+
+  chapMatch(cPassword: string, chapPassword: any, challenge: any) {
+    let hash = chapPassword.slice(1);
+    let md5 = crypto.createHash('md5');
+    md5.write(chapPassword.slice(0, 1));
+    md5.write(Buffer.from(cPassword));
+    md5.write(challenge);
+    let calc = md5.digest('hex');
+    return hash.equals(Buffer.from(calc, 'hex'));
+    
+  }
+
   async onStart() {
+
     this.server.on('message', async (msg, rinfo) => {
       let packet: iPacket;
 
@@ -37,26 +59,15 @@ export class MikrotikService implements OnModuleInit {
       try {
         if (packet.code === 'Access-Request') {
           const username = packet.attributes['User-Name'];
-          const password = packet.attributes['User-Password'];
-          /* -- RECEIVE
-          'Service-Type': 'Framed-User',
-          'Framed-Protocol': 'PPP',
-          'NAS-Port': 15728650,
-          'NAS-Port-Type': 'Ethernet',
-          'User-Name': 'Rodrigo.Adachi',
-          'Calling-Station-Id': 'EC:F4:BB:FA:36:C9',
-          'Called-Station-Id': '2-pppoe',
-          'NAS-Port-Id': '2-Client',
-          'Acct-Session-Id': '81600009',
-          'Vendor-Specific': {},
-          'NAS-Identifier': 'MikroTik',
-          'NAS-IP-Address': '192.168.1.254'
-          */
-
           const client = await this.clientsService.findUserName(username);
 
+          const atrChapChallenge = packet.attributes['CHAP-Challenge']
+          const atrChapPassword = packet.attributes['CHAP-Password']
+
+          const validPassword = this.chapMatch(client.password, atrChapPassword, atrChapChallenge)
+
           const code =
-            username == client.username && password == client.password
+            username == client.username && !!validPassword
               ? 'Access-Accept'
               : 'Access-Reject';
 
@@ -83,17 +94,11 @@ export class MikrotikService implements OnModuleInit {
           //     ['Mikrotik-Rate-Limit', velocid],
           //   ],
           // ],
-          const challenge = 'aa';
-          const chapPassword = md5(client.username + challenge);
 
           const response = radius.encode_response({
             packet,
             code,
             secret: this.secret,
-            chap: {
-              password: client.password,
-              challenge,
-            },
             attributes: [
               ['User-Name', packet.attributes['User-Name']],
               ['NAS-Port', packet.attributes['NAS-Port']],
@@ -122,7 +127,7 @@ export class MikrotikService implements OnModuleInit {
 
           //   // const resUpdate = await ms.put(`/clients/${id}`, _client);
           // }
-
+          console.log('[code]', code);
           this.server.send(
             response,
             0,
