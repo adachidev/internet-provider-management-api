@@ -39,7 +39,6 @@ export class MikrotikService implements OnModuleInit {
     md5.write(challenge);
     let calc = md5.digest('hex');
     return hash.equals(Buffer.from(calc, 'hex'));
-    
   }
 
   async onStart() {
@@ -50,7 +49,6 @@ export class MikrotikService implements OnModuleInit {
       try {
         packet = radius.decode({ packet: msg, secret: this.secret });
         if (packet.code === 'Access-Accept') console.log('connected');
-        console.log('[code]', packet.code);
       } catch (e) {
         console.log('Failed to decode radius packet, silently dropping:', e);
         return new Error('ERROR_RADIUS_DECODE');
@@ -61,40 +59,20 @@ export class MikrotikService implements OnModuleInit {
           const username = packet.attributes['User-Name'];
           const client = await this.clientsService.findUserName(username);
 
-          const atrChapChallenge = packet.attributes['CHAP-Challenge']
-          const atrChapPassword = packet.attributes['CHAP-Password']
+          const atrChapChallenge = packet?.attributes['CHAP-Challenge']
+          const atrChapPassword = packet?.attributes['CHAP-Password']
 
-          const validPassword = this.chapMatch(client.password, atrChapPassword, atrChapChallenge)
+          const validPassword = this.chapMatch(client?.password, atrChapPassword, atrChapChallenge)
 
           const code =
-            username == client.username && !!validPassword
+            username == client?.username && !!validPassword
               ? 'Access-Accept'
               : 'Access-Reject';
 
-          const velocid = `${client.plan.upload}M/${client.plan.download}M`;
+          const velocid = `${client?.plan?.upload}M/${client?.plan?.download}M`;
 
           // https://wiki.mikrotik.com/wiki/Manual:RADIUS_Client/vendor_dictionary
-          // ['NAS-Port-Type', packet.attributes['NAS-Port-Type']],
-          // ['Calling-Station-Id', packet.attributes['Calling-Station-Id']],
-          // ['Called-Station-Id', packet.attributes['Called-Station-Id']],
-          // ['NAS-Port-Id', packet.attributes['NAS-Port-Id']],
-          // ['User-Name', packet.attributes['User-Name']],
-          // ['NAS-Port', packet.attributes['NAS-Port']],
-          // // ['Acct-Session-Id', packet.attributes['Acct-Session-Id']],
-          // // ['Framed-IP-Address', packet.attributes['Framed-IP-Address']],
-          // ['User-Password', packet.attributes['User-Password']],
-          // ['Service-Type', packet.attributes['Service-Type']],
-          // ['NAS-Identifier', packet.attributes['NAS-Identifier']],
-          // ['NAS-IP-Address', packet.attributes['NAS-IP-Address']],
-          // [
-          //   'Vendor-Specific',
-          //   'Mikrotik',
-          //   [
-          //     ['Mikrotik-Host-IP', packet.attributes['NAS-IP-Address']],
-          //     ['Mikrotik-Rate-Limit', velocid],
-          //   ],
-          // ],
-
+         
           const response = radius.encode_response({
             packet,
             code,
@@ -113,21 +91,6 @@ export class MikrotikService implements OnModuleInit {
             ],
           });
 
-          // const res = await radius.decode({ packet: response, secret: secret });
-
-          // if (res.code === 'Access-Accept') {
-          //   const { attributes } = res;
-          //   const id = client.data._id;
-
-          //   const _client = {
-          //     macAddress: attributes['Calling-Station-Id'],
-          //     uptime: Date.now(),
-          //     connected: true,
-          //   };
-
-          //   // const resUpdate = await ms.put(`/clients/${id}`, _client);
-          // }
-          console.log('[code]', code);
           this.server.send(
             response,
             0,
