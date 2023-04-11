@@ -8,23 +8,17 @@ export type ClientDocument = Client & Document;
 
 @Schema()
 export class Client {
-  @Prop({ required: true })
-  clientId: string;
-
   @Prop()
   email: string;
 
   @Prop()
-  userId: string;
-
-  @Prop()
-  phone1: string;
+  phone: string;
 
   @Prop({ default: false })
-  isWaPhone1: boolean;
+  isWaPhone: boolean;
 
   @Prop({ default: true })
-  isAdmPhone1: boolean;
+  isAdmPhone: boolean;
 
   @Prop()
   phone2: string;
@@ -44,11 +38,11 @@ export class Client {
   @Prop({ required: true })
   lastName: string;
 
-  @Prop()
-  connectionType: string;
-
   @Prop({ default: true })
   enable: boolean;
+
+  @Prop()
+  registerNumber: string;
 
   @Prop()
   username: string;
@@ -61,6 +55,9 @@ export class Client {
 
   @Prop()
   addressComplement: string;
+
+  @Prop()
+  addressRegion: string;
 
   @Prop()
   addressNumber: string;
@@ -84,28 +81,7 @@ export class Client {
   lonLocation: string;
 
   @Prop()
-  ipV4Address: string;
-
-  @Prop({ default: false })
-  ipV4AddressFixed: boolean;
-
-  @Prop()
-  ipV6Address: string;
-
-  @Prop({ default: false })
-  ipV6AddressFixed: boolean;
-
-  @Prop()
-  macAddress: string;
-
-  @Prop()
-  branch: string; // ramal
-
-  @Prop()
   uptime: number;
-
-  @Prop()
-  connected: boolean;
 
   @Prop({ type: Date })
   birthDate: Date;

@@ -26,17 +26,11 @@ export class ClientsService {
     const movement = new this.movementModel();
     client.createdAt = new Date();
     client.userCreatedId = userId;
-    client.updatedAt = new Date();
-    client.userUpdatedId = userId;
     client.enable = true;
-    client.connected = false;
-    const firstName = client.firstName; //.toLowerCase().replace(/^\s+|\s+$/gm, '');
-    const lastName = client.lastName; //.toLowerCase().replace(/^\s+|\s+$/gm, '');
-    client.username = `${firstName}.${lastName}`;
-    client.password = client.phone1; //.replace(/^\s+|\s+$/gm, '');
-    console.log('clients create client]', client);
+    client.username = client.registerNumber;
+    client.password = 'HGR%R$¨%$%¨43%¨$$&%*¨%85'
     const result = await client.save();
-    console.log('clients create result]', result);
+
     movement.clientId = result._id;
     movement.newPlanId = result.plan;
     movement.reason = 'Cadastro de cliente';
@@ -48,17 +42,17 @@ export class ClientsService {
   }
 
   async findAll() {
-    return this.clientModel.find().populate('plan');
+    return this.clientModel.find({ deletedAt: null }).populate('plan');
   }
 
   async findOne(id: string) {
     return this.clientModel.findById(id).populate('plan');
   }
 
-  async findUserName(username: string) {
+  async findEmail(email: string) {
     return this.clientModel
       .findOne({
-        username,
+        email,
       })
       .populate('plan');
   }
@@ -70,7 +64,7 @@ export class ClientsService {
       })
       .populate('plan');
 
-    if (!resPhone || !resPhone.isWaPhone1 || !resPhone.isAdmPhone1) {
+    if (!resPhone || !resPhone.isWaPhone || !resPhone.isAdmPhone) {
       resPhone = await this.clientModel
         .findOne({
           phone2: phone,
@@ -112,6 +106,7 @@ export class ClientsService {
 
   async remove(userId: any, id: any) {
     const client = await this.clientModel.findById(id);
+    if (client.deletedAt) return null
     client.enable = false;
     client.deletedAt = new Date();
     client.userDeletedId = userId;
@@ -129,3 +124,4 @@ export class ClientsService {
     return result;
   }
 }
+

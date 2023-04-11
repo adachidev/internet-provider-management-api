@@ -11,7 +11,7 @@ export class UsersService {
   constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
 
   async create(userId: any, createUserDto: CreateUserDto): Promise<User> {
-    const isExists = await this.getByUsername(createUserDto.username);
+    const isExists = await this.getByEmail(createUserDto.email);
     if (isExists) throw new NotFoundException('User exists');
     const user = new this.userModel(createUserDto);
     user.enable = true;
@@ -35,10 +35,6 @@ export class UsersService {
 
   async getByEmail(email: string) {
     return await this.userModel.findOne({ email });
-  }
-
-  async getByUsername(username: string) {
-    return await this.userModel.findOne({ username });
   }
 
   async update(userId: any, id: any, updateUserDto: UpdateUserDto) {

@@ -40,12 +40,6 @@ export class ClientsController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Get(':username/username')
-  findUser(@Param('username') id: string) {
-    return this.clientsService.findUserName(id);
-  }
-
-  @UseGuards(JwtAuthGuard)
   @Get(':phone/phone')
   findPhone(@Param('phone') id: string) {
     return this.clientsService.findPhone(id);

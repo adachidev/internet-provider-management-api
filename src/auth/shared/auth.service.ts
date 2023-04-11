@@ -14,16 +14,16 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  async validateUser(userName: string, userPassword: string) {
-    const user = await this.usersService.getByUsername(userName);
-    if (!user) return { error: 'INVALID_USERNAME'}
+  async validateUser(email: string, userPassword: string) {
+    const user = await this.usersService.getByEmail(email);
+    if (!user) return { error: 'INVALID_EMAIL'}
 
     const isPasswordValid = await bcrypt.compare(userPassword, user.password);
     if (user && !isPasswordValid) return { error: 'INVALID_PASSWORD'}
 
     if (user && isPasswordValid) {
-      const { _id, username, firstName, lastName, email } = user;
-      return { id: _id, username, firstName, lastName, email };
+      const { _id, firstName, lastName, email } = user;
+      return { id: _id, firstName, lastName, email };
     }
 
     return null;
@@ -31,7 +31,7 @@ export class AuthService {
 
   async login(user: any) {
     const payload = {
-      username: user.username,
+      email: user.email,
       sub: user.id
     };
     return {

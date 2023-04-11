@@ -7,12 +7,16 @@ import { iPacket } from './dto/mikrotik.dto';
 import * as md5 from 'md5';
 import { CHAP, MSCHAPv1 } from 'chap';
 import * as crypto from 'crypto';
+import { ConnectionsService } from 'src/connections/connections.service';
 
 dotenv.config();
 
 @Injectable()
 export class MikrotikService implements OnModuleInit {
-  constructor(private readonly clientsService: ClientsService) {}
+  constructor(
+    private readonly clientsService: ClientsService,
+    private readonly connectionsService: ConnectionsService,
+  ) {}
 
   private secret = String(process.env.MIKROTIK_RADIUS_PASS);
   private port = Number(process.env.MIKROTIK_RADIUS_PORT);
@@ -57,19 +61,19 @@ export class MikrotikService implements OnModuleInit {
       try {
         if (packet.code === 'Access-Request') {
           const username = packet.attributes['User-Name'];
-          const client = await this.clientsService.findUserName(username);
+          const connection = await this.connectionsService.findUserName(username);
 
           const atrChapChallenge = packet?.attributes['CHAP-Challenge']
           const atrChapPassword = packet?.attributes['CHAP-Password']
 
-          const validPassword = this.chapMatch(client?.password, atrChapPassword, atrChapChallenge)
+          const validPassword = this.chapMatch(connection?.password, atrChapPassword, atrChapChallenge)
 
           const code =
-            username == client?.username && !!validPassword
+            username == connection?.username && !!validPassword
               ? 'Access-Accept'
               : 'Access-Reject';
 
-          const velocid = `${client?.plan?.upload}M/${client?.plan?.download}M`;
+          const velocid = `${connection?.plan?.upload}M/${connection?.plan?.download}M`;
 
           // https://wiki.mikrotik.com/wiki/Manual:RADIUS_Client/vendor_dictionary
          
@@ -85,7 +89,7 @@ export class MikrotikService implements OnModuleInit {
                 'Mikrotik',
                 [
                   ['Mikrotik-Host-IP', '10.20.10.1'], //packet.attributes['NAS-IP-Address']],
-                  ['Mikrotik-Rate-Limit', velocid],
+                  ['Mikrotik-Rate-Limit', velocid],// bust "10M/5M 15M/7M"
                 ],
               ],
             ],

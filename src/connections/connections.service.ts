@@ -4,6 +4,7 @@ import { Model } from 'mongoose';
 import { Box, BoxDocument } from 'src/box/entities/box.entity';
 import { CreateConnectionsDto } from './dto/create-connection.dto';
 import { Connection, ConnectionDocument } from './entities/connection.entity';
+import { ClientsService } from 'src/clients/clients.service';
 
 @Injectable()
 export class ConnectionsService {
@@ -11,7 +12,12 @@ export class ConnectionsService {
     @InjectModel(Connection.name)
     private connectionModel: Model<ConnectionDocument>,
     @InjectModel(Box.name) private boxModel: Model<BoxDocument>,
+    private readonly clientsService: ClientsService,
   ) {}
+
+  removeAccents(name: string) {
+    return name.normalize('NFD').replace(/[\u0300-\u036f]/g, "")
+  }
 
   async create(userId: any, createConnectionsDto: CreateConnectionsDto) {
     const isExists = await this.connectionModel
@@ -21,7 +27,7 @@ export class ConnectionsService {
       .where('port')
       .equals(createConnectionsDto.port);
 
-    if (isExists) return 'CONNECTION_EXISTS';
+    if (!!isExists && !!createConnectionsDto.box && !!createConnectionsDto.port) return 'CONNECTION_EXISTS';
 
     const countPort = await this.boxModel.findById(createConnectionsDto.box);
 
@@ -35,7 +41,16 @@ export class ConnectionsService {
 
     if (countUse.length > countPort?.capacity) return 'CAPACITY_SATURATION';
 
+    const client = await this.clientsService.findOne(createConnectionsDto.client)
+    if (!client) return 'USER_NOT_EXISTS';
+
+    let username = `${client.firstName.trim()}${client.lastName.trim()}`;
+    username = this.removeAccents(username.toLowerCase())
+    let password = String(client.phone).trim()
     const connection = new this.connectionModel(createConnectionsDto);
+    connection.client = client
+    connection.username = username
+    connection.password = password
     connection.createdAt = new Date();
     connection.userCreatedId = userId;
     connection.updatedAt = new Date();
@@ -50,5 +65,9 @@ export class ConnectionsService {
 
   async findOne(id: string) {
     return this.connectionModel.findById(id);
+  }
+
+  async findUserName(username: string) {
+    return this.connectionModel.findOne({ username }).populate('plan');
   }
 }
