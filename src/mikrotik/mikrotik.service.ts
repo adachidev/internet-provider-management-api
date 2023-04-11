@@ -68,32 +68,38 @@ export class MikrotikService implements OnModuleInit {
 
           const validPassword = this.chapMatch(connection?.password, atrChapPassword, atrChapChallenge)
 
-          const code =
-            username == connection?.username && !!validPassword
-              ? 'Access-Accept'
-              : 'Access-Reject';
+          let response
+          
+          if (username == connection?.username && !!validPassword) {
 
-          const velocid = `${connection?.plan?.upload}M/${connection?.plan?.download}M`;
+            const velocid = `${connection?.plan?.upload}M/${connection?.plan?.download}M`;
 
-          // https://wiki.mikrotik.com/wiki/Manual:RADIUS_Client/vendor_dictionary
-         
-          const response = radius.encode_response({
-            packet,
-            code,
-            secret: this.secret,
-            attributes: [
-              ['User-Name', packet.attributes['User-Name']],
-              ['NAS-Port', packet.attributes['NAS-Port']],
-              [
-                'Vendor-Specific',
-                'Mikrotik',
+            // https://wiki.mikrotik.com/wiki/Manual:RADIUS_Client/vendor_dictionary
+          
+            response = radius.encode_response({
+              packet,
+              code: 'Access-Accept',
+              secret: this.secret,
+              attributes: [
+                ['User-Name', packet.attributes['User-Name']],
+                ['NAS-Port', packet.attributes['NAS-Port']],
                 [
-                  ['Mikrotik-Host-IP', '10.20.10.1'], //packet.attributes['NAS-IP-Address']],
-                  ['Mikrotik-Rate-Limit', velocid],// bust "10M/5M 15M/7M"
+                  'Vendor-Specific',
+                  'Mikrotik',
+                  [
+                    ['Mikrotik-Host-IP', '10.20.10.1'], //packet.attributes['NAS-IP-Address']],
+                    ['Mikrotik-Rate-Limit', velocid],// bust "10M/5M 15M/7M"
+                  ],
                 ],
               ],
-            ],
-          });
+            });
+          }
+          else {
+            response = radius.encode_response({
+              packet,
+              code: 'Access-Reject',
+            });            
+          }
 
           this.server.send(
             response,
