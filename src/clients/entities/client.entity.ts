@@ -3,6 +3,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 import { Plan } from 'src/plans/entities/plan.entity';
 import { User } from 'src/users/entities/user.entity';
+import { Connection } from 'src/connections/entities/connection.entity';
 
 export type ClientDocument = Client & Document;
 
@@ -80,14 +81,11 @@ export class Client {
   @Prop()
   lonLocation: string;
 
-  @Prop()
-  uptime: number;
-
   @Prop({ type: Date })
   birthDate: Date;
 
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Plan' })
-  plan: Plan;
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Connection' })
+  connections: Connection[];
 
   @Prop({ type: Date })
   createdAt: Date;
@@ -109,9 +107,6 @@ export class Client {
 
   @Prop()
   observation: string;
-
-  @Prop()
-  expirationDay: number;
 }
 
 export const ClientSchema = SchemaFactory.createForClass(Client);

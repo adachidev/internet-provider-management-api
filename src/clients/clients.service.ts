@@ -18,7 +18,7 @@ export class ClientsService {
 
   async create(userId: any, createClientDto: CreateClientDto) {
     const isExists = await this.clientModel.findOne({
-      clientId: createClientDto.clientId,
+      registerNumber: createClientDto.registerNumber,
     });
     if (isExists) return 'USER_EXISTS';
 
@@ -27,12 +27,9 @@ export class ClientsService {
     client.createdAt = new Date();
     client.userCreatedId = userId;
     client.enable = true;
-    client.username = client.registerNumber;
-    client.password = 'HGR%R$¨%$%¨43%¨$$&%*¨%85'
     const result = await client.save();
 
     movement.clientId = result._id;
-    movement.newPlanId = result.plan;
     movement.reason = 'Cadastro de cliente';
     movement.createdAt = new Date();
     movement.userCreatedId = userId;
@@ -42,11 +39,11 @@ export class ClientsService {
   }
 
   async findAll() {
-    return this.clientModel.find({ deletedAt: null }).populate('plan');
+    return this.clientModel.find({ deletedAt: null })
   }
 
   async findOne(id: string) {
-    return this.clientModel.findById(id).populate('plan');
+    return this.clientModel.findById(id)
   }
 
   async findEmail(email: string) {
@@ -54,7 +51,6 @@ export class ClientsService {
       .findOne({
         email,
       })
-      .populate('plan');
   }
 
   async findPhone(phone: string) {
@@ -62,14 +58,12 @@ export class ClientsService {
       .findOne({
         phone1: phone,
       })
-      .populate('plan');
 
     if (!resPhone || !resPhone.isWaPhone || !resPhone.isAdmPhone) {
       resPhone = await this.clientModel
         .findOne({
           phone2: phone,
         })
-        .populate('plan');
       if (!resPhone || !resPhone.isWaPhone2 || !resPhone.isAdmPhone2)
         return 'USER_NOT_FOUND';
     }
@@ -80,21 +74,21 @@ export class ClientsService {
     updateClientDto.updatedAt = new Date();
     updateClientDto.userUpdatedId = userId;
 
-    if (updateClientDto.firstName && updateClientDto.lastName) {
-      const firstName = updateClientDto.firstName
-        .toLowerCase()
-        .replace(/^\s+|\s+$/gm, '');
-      const lastName = updateClientDto.lastName
-        .toLowerCase()
-        .replace(/^\s+|\s+$/gm, '');
-      updateClientDto.username = `${firstName}.${lastName}`;
-    }
+    // if (updateClientDto.firstName && updateClientDto.lastName) {
+    //   const firstName = updateClientDto.firstName
+    //     .toLowerCase()
+    //     .replace(/^\s+|\s+$/gm, '');
+    //   const lastName = updateClientDto.lastName
+    //     .toLowerCase()
+    //     .replace(/^\s+|\s+$/gm, '');
+    //   updateClientDto.username = `${firstName}.${lastName}`;
+    // }
 
-    if (updateClientDto.phone1)
-      updateClientDto.password = updateClientDto.phone1.replace(
-        /^\s+|\s+$/gm,
-        '',
-      );
+    // if (updateClientDto.phone)
+    //   updateClientDto.password = updateClientDto.phone.replace(
+    //     /^\s+|\s+$/gm,
+    //     '',
+    //   );
 
     const res = await this.clientModel.findByIdAndUpdate(id, updateClientDto, {
       new: true,
