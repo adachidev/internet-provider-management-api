@@ -18,17 +18,11 @@ export class Client {
   @Prop({ default: false })
   isWaPhone: boolean;
 
-  @Prop({ default: true })
+  @Prop({ default: true }) // para integração com whatsapp
   isAdmPhone: boolean;
 
   @Prop()
   phone2: string;
-
-  @Prop({ default: false })
-  isWaPhone2: boolean;
-
-  @Prop({ default: false })
-  isAdmPhone2: boolean;
 
   @Prop({ required: true })
   firstName: string;
@@ -39,10 +33,10 @@ export class Client {
   @Prop({ required: true })
   lastName: string;
 
-  @Prop({ default: true })
-  enable: boolean;
+  @Prop({ default: true }) // 1 - pré cadastro, 2 - ativo, 3 - inativo
+  status: number;
 
-  @Prop()
+  @Prop() // CPF ou CNPJ
   registerNumber: string;
 
   @Prop()
@@ -51,37 +45,40 @@ export class Client {
   @Prop()
   password: string;
 
-  @Prop()
+  @Prop() // Rua ....
   address: string;
 
-  @Prop()
+  @Prop() // 1° Andar ou AP 135
   addressComplement: string;
 
-  @Prop()
+  @Prop() // Ponto de refer~encia
+  addressReference: string;
+
+  @Prop() // jm - Condominio JM
   addressRegion: string;
 
-  @Prop()
+  @Prop() // Número
   addressNumber: string;
 
-  @Prop()
+  @Prop() // Bairro
   addressDistrito: string;
 
-  @Prop()
+  @Prop() // Cidade
   addressCity: string;
 
-  @Prop()
+  @Prop() // Estado
   addressState: string;
 
   @Prop()
   addressCep: string;
 
-  @Prop()
+  @Prop() // Latitude
   latLocation: string;
 
-  @Prop()
+  @Prop() // Longitude
   lonLocation: string;
 
-  @Prop({ type: Date })
+  @Prop({ type: Date }) // Data de aniversário
   birthDate: Date;
 
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Connection' })

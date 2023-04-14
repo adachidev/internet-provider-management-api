@@ -10,6 +10,7 @@ export type ConnectionDocument = Connection & Document;
 
 @Schema()
 export class Connection {
+
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Client' })
   client: Client;
 
