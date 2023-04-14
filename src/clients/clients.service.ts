@@ -26,7 +26,7 @@ export class ClientsService {
     const movement = new this.movementModel();
     client.createdAt = new Date();
     client.userCreatedId = userId;
-    client.enable = true;
+    client.status = 1;
     const result = await client.save();
 
     movement.clientId = result._id;
@@ -64,8 +64,6 @@ export class ClientsService {
         .findOne({
           phone2: phone,
         })
-      if (!resPhone || !resPhone.isWaPhone2 || !resPhone.isAdmPhone2)
-        return 'USER_NOT_FOUND';
     }
     return resPhone;
   }
@@ -101,7 +99,7 @@ export class ClientsService {
   async remove(userId: any, id: any) {
     const client = await this.clientModel.findById(id);
     if (client.deletedAt) return null
-    client.enable = false;
+    client.status = 3;
     client.deletedAt = new Date();
     client.userDeletedId = userId;
     const result = await this.clientModel.findByIdAndUpdate(id, client, {
