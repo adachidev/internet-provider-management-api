@@ -63,6 +63,10 @@ export class ConnectionsService {
     return this.connectionModel.find();
   }
 
+  async findByUser(id: string) {
+    return null//this.connectionModel.findById(id);
+  }
+
   async findOne(id: string) {
     return this.connectionModel.findById(id);
   }

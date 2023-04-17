@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   UseGuards,
+  Put,
 } from '@nestjs/common';
 import { PlansService } from './plans.service';
 import { CreatePlanDto } from './dto/create-plan.dto';
@@ -37,7 +38,7 @@ export class PlansController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Patch(':id')
+  @Put(':id')
   update(@Param('id') id: string, @Body() updatePlanDto: UpdatePlanDto) {
     return this.plansService.update(id, updatePlanDto);
   }

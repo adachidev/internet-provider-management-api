@@ -30,6 +30,13 @@ export class ConnectionsController {
     return this.connectionsService.findAll();
   }
 
+  
+  @UseGuards(JwtAuthGuard)
+  @Get('/client/:id')
+  findByUser(@Param('id') id: string) {
+    return this.connectionsService.findByUser(id);
+  }
+
   @UseGuards(JwtAuthGuard)
   @Get(':id')
   findOne(@Param('id') id: string) {
