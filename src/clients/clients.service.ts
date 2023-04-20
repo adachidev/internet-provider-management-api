@@ -1,119 +1,111 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import {
-  Movement,
-  MovementDocument,
-} from 'src/movements/entities/movement.entity';
-import { CreateClientDto } from './dto/create-client.dto';
-import { UpdateClientDto } from './dto/update-client.dto';
-import { Client, ClientDocument } from './entities/client.entity';
+import { Client } from './entities/client.entity';
+import { IsNull, Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
+import { ClientDto } from './dto/client.dto';
+import { plainToClass } from 'class-transformer';
+import { User } from 'src/users/entities/user.entity';
+import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class ClientsService {
   constructor(
-    @InjectModel(Client.name) private clientModel: Model<ClientDocument>,
-    @InjectModel(Movement.name) private movementModel: Model<MovementDocument>,
+    @InjectRepository(Client) private repository: Repository<Client>,
+    // @InjectModel(Movement.name) private movementModel: Model<MovementDocument>,
   ) {}
 
-  async create(userId: any, createClientDto: CreateClientDto) {
-    const isExists = await this.clientModel.findOne({
-      registerNumber: createClientDto.registerNumber,
+  async create(userId: any, dto: ClientDto) {
+    const isExists = await this.repository.findOne({
+      where: { registerNumber: dto.registerNumber },
     });
     if (isExists) return 'USER_EXISTS';
 
-    const client = new this.clientModel(createClientDto);
-    const movement = new this.movementModel();
+    const client = plainToClass(Client, dto);
+    client.id = uuidv4();
     client.createdAt = new Date();
-    client.userCreatedId = userId;
-    client.status = 1;
-    const result = await client.save();
+    client.username = client.email.toLocaleLowerCase()
+    client.password = client.registerNumber
+    client.userCreated = plainToClass(User, await this.findOne(userId));
+    client.status = 2;// pre cadastro
+    const result = await this.repository.save(client);
 
-    movement.clientId = result._id;
-    movement.reason = 'Cadastro de cliente';
-    movement.createdAt = new Date();
-    movement.userCreatedId = userId;
-    await movement.save();
+    // const movement = new this.movementModel();
+    // movement.clientId = result._id;
+    // movement.reason = 'Cadastro de cliente';
+    // movement.createdAt = new Date();
+    // movement.userCreatedId = userId;
+    // await movement.save();
 
     return result;
   }
 
   async findAll() {
-    return this.clientModel.find({ deletedAt: null })
+    return this.repository.find({ where: { deletedAt: IsNull() } })
   }
 
   async findOne(id: string) {
-    return this.clientModel.findById(id)
+    return this.repository.findOne({ where: { id }})
   }
 
   async findEmail(email: string) {
-    return this.clientModel
-      .findOne({
-        email,
-      })
+    return this.repository.findOne({ where: { email } })
   }
 
   async findPhone(phone: string) {
-    let resPhone = await this.clientModel
-      .findOne({
-        phone1: phone,
-      })
+    let resPhone = await this.repository.findOne({ where: { phone } })
 
     if (!resPhone || !resPhone.isWaPhone || !resPhone.isAdmPhone) {
-      resPhone = await this.clientModel
-        .findOne({
-          phone2: phone,
-        })
+      resPhone = await this.repository.findOne({ where: { phone } })
     }
     return resPhone;
   }
 
-  async update(userId: any, id: string, updateClientDto: UpdateClientDto) {
-    updateClientDto.updatedAt = new Date();
-    updateClientDto.userUpdatedId = userId;
+  async update(userId: any, id: string, dto: ClientDto) {
+    const isExists = await this.repository.findOne({ where: { id }})
+    if (!isExists) return 'USER_NOT_FOUND'
 
-    // if (updateClientDto.firstName && updateClientDto.lastName) {
-    //   const firstName = updateClientDto.firstName
+    const client = plainToClass(Client, dto);
+    client.updatedAt = new Date();
+    client.userUpdated = plainToClass(User, await this.findOne(userId));
+    client.id = id
+
+    // if (client.firstName && client.lastName) {
+    //   const firstName = client.firstName
     //     .toLowerCase()
     //     .replace(/^\s+|\s+$/gm, '');
-    //   const lastName = updateClientDto.lastName
+    //   const lastName = client.lastName
     //     .toLowerCase()
     //     .replace(/^\s+|\s+$/gm, '');
-    //   updateClientDto.username = `${firstName}.${lastName}`;
+    //   client.username = `${firstName}.${lastName}`;
     // }
 
-    // if (updateClientDto.phone)
-    //   updateClientDto.password = updateClientDto.phone.replace(
+    // if (client.phone)
+    //   client.password = client.phone.replace(
     //     /^\s+|\s+$/gm,
     //     '',
     //   );
 
-    const res = await this.clientModel.findByIdAndUpdate(id, updateClientDto, {
-      new: true,
-    });
+    const res = await this.repository.save(client);
 
     if (!res) return 'CLIENT_NOT_FOUND';
     return res;
   }
 
   async remove(userId: any, id: any) {
-    const client = await this.clientModel.findById(id);
+    const client = await this.repository.findOne({ where: { id } });
     if (client.deletedAt) return null
     client.status = 3;
     client.deletedAt = new Date();
-    client.userDeletedId = userId;
-    const result = await this.clientModel.findByIdAndUpdate(id, client, {
-      new: true,
-    });
+    client.userDeleted = plainToClass(User, await this.findOne(userId));
+    const result = await this.repository.save(client);
 
-    const movement = new this.movementModel();
-    movement.clientId = id;
-    movement.reason = 'Exclusão de cliente';
-    movement.createdAt = new Date();
-    movement.userCreatedId = userId;
-    await movement.save();
+    // const movement = new this.movementModel();
+    // movement.clientId = id;
+    // movement.reason = 'Exclusão de cliente';
+    // movement.createdAt = new Date();
+    // movement.userCreatedId = userId;
+    // await movement.save();
 
     return result;
   }
 }
-

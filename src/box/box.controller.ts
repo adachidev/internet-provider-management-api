@@ -9,7 +9,7 @@ import {
 } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/shared/jwt-auth.guard';
 import { BoxService } from './box.service';
-import { CreateBoxDto } from './dto/create-box.dto';
+import { BoxDto } from './dto/box.dto';
 
 @Controller('box')
 export class BoxController {
@@ -17,8 +17,8 @@ export class BoxController {
 
   @UseGuards(JwtAuthGuard)
   @Post()
-  create(@Query('userId') userId: string, @Body() createBoxDto: CreateBoxDto) {
-    return this.boxService.create(userId, createBoxDto);
+  create(@Query('userId') userId: string, @Body() dto: BoxDto) {
+    return this.boxService.create(userId, dto);
   }
 
   @UseGuards(JwtAuthGuard)

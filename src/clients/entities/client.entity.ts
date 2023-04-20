@@ -1,109 +1,105 @@
-import * as mongoose from 'mongoose';
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
-import { Plan } from 'src/plans/entities/plan.entity';
-import { User } from 'src/users/entities/user.entity';
-import { Connection } from 'src/connections/entities/connection.entity';
+import { Connection } from "src/connections/entities/connection.entity";
+import { User } from "src/users/entities/user.entity";
+import { Column, Entity, ManyToOne, OneToMany, PrimaryColumn } from "typeorm";
 
-export type ClientDocument = Client & Document;
-
-@Schema()
+@Entity({ name: 'client' })
 export class Client {
-  @Prop()
+  @PrimaryColumn({ type: 'uuid', length: 36 })
+  id: string;
+
+  @Column({ length: 120 })
   email: string;
 
-  @Prop()
+  @Column({ length: 20 })
   phone: string;
 
-  @Prop({ default: false })
+  @Column()
   isWaPhone: boolean;
 
-  @Prop({ default: true }) // para integração com whatsapp
+  @Column({ default: true }) // para integração com whatsapp
   isAdmPhone: boolean;
 
-  @Prop()
+  @Column()
   phone2: string;
 
-  @Prop({ required: true })
+  @Column({ nullable: true })
   firstName: string;
 
-  @Prop()
+  @Column()
   midName: string;
 
-  @Prop({ required: true })
+  @Column({ nullable: true })
   lastName: string;
 
-  @Prop({ default: true }) // 1 - pré cadastro, 2 - ativo, 3 - inativo
+  @Column({ default: true }) // 1 - pré cadastro, 2 - ativo, 3 - inativo
   status: number;
 
-  @Prop() // CPF ou CNPJ
+  @Column() // CPF ou CNPJ
   registerNumber: string;
 
-  @Prop()
+  @Column()
   username: string;
 
-  @Prop()
+  @Column()
   password: string;
 
-  @Prop() // Rua ....
+  @Column() // Rua ....
   address: string;
 
-  @Prop() // 1° Andar ou AP 135
+  @Column() // 1° Andar ou AP 135
   addressComplement: string;
 
-  @Prop() // Ponto de refer~encia
+  @Column() // Ponto de refer~encia
   addressReference: string;
 
-  @Prop() // jm - Condominio JM
+  @Column() // jm - Condominio JM
   addressRegion: string;
 
-  @Prop() // Número
+  @Column() // Número
   addressNumber: string;
 
-  @Prop() // Bairro
+  @Column() // Bairro
   addressDistrito: string;
 
-  @Prop() // Cidade
+  @Column() // Cidade
   addressCity: string;
 
-  @Prop() // Estado
+  @Column() // Estado
   addressState: string;
 
-  @Prop()
+  @Column()
   addressCep: string;
 
-  @Prop() // Latitude
+  @Column() // Latitude
   latLocation: string;
 
-  @Prop() // Longitude
+  @Column() // Longitude
   lonLocation: string;
 
-  @Prop({ type: Date }) // Data de aniversário
+  @Column({ type: Date }) // Data de aniversário
   birthDate: Date;
 
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Connection' })
+  @OneToMany(() => Connection, (connection) => connection.id, { nullable: true })
   connections: Connection[];
 
-  @Prop({ type: Date })
+  @Column({ nullable: true })
+  observation: string;
+
+  @Column()
   createdAt: Date;
 
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' })
-  userCreatedId: User;
+  @ManyToOne(() => User, (user) => user.id, { nullable: true })
+  userCreated: User;
 
-  @Prop({ type: Date })
+  @Column({ nullable: true })
   deletedAt: Date;
 
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' })
-  userDeletedId: User;
+  @ManyToOne(() => User, (user) => user.id, { nullable: true })
+  userDeleted: User;
 
-  @Prop({ type: Date })
+  @Column({ nullable: true })
   updatedAt: Date;
 
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' })
-  userUpdatedId: User;
-
-  @Prop()
-  observation: string;
+  @ManyToOne(() => User, (user) => user.id, { nullable: true })
+  userUpdated: User;
 }
-
-export const ClientSchema = SchemaFactory.createForClass(Client);

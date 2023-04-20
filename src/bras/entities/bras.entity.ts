@@ -1,7 +1,7 @@
 import { User } from "src/users/entities/user.entity";
 import { Column, ManyToOne, PrimaryColumn } from "typeorm";
 
-export class Box {
+export class Bras {
 
   @PrimaryColumn({ type: 'uuid', length: 36 })
   id: string;
@@ -10,28 +10,25 @@ export class Box {
   description: string;
 
   @Column({ length: 36 })
-  latitude: string;
+  code: string;
 
-  @Column({ length: 36 })
-  longitude: string;
+  @Column({ length: 120 })
+  vendor: string;
 
   @Column({ length: 250 })
-  address: string;
+  model: string;
 
-  @Column({ length: 100, default: 'CTO' })
-  type: string;
+  @Column({ length: 100 })
+  status: string;
 
   @Column({ default: 16 })
-  capacity: number;
+  interfaces: number;
 
   @Column()
-  signal: number;
+  ipv4manager: string;
 
   @Column()
-  olt: string;
-
-  @Column()
-  oltId: string;
+  macmanager: string;
 
   @Column()
   observation: string;

@@ -1,17 +1,17 @@
-import { BoxController } from './box.controller';
 import { Module } from '@nestjs/common';
-import { Box } from './entities/box.entity';
-import { BoxService } from './box.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from 'src/users/entities/user.entity';
+import { Bras } from './entities/bras.entity';
+import { BrasController } from './bras.controller';
+import { BrasService } from './bras.service';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([
-      Box, User,
+      Bras, User,
     ]),
   ],
-  controllers: [BoxController],
-  providers: [BoxService],
+  controllers: [BrasController],
+  providers: [BrasService],
 })
 export class BoxModule {}

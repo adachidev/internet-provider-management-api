@@ -1,69 +1,59 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import { Entity, Column, PrimaryColumn, ManyToOne } from 'typeorm';
 
-export type UserDocument = User & Document;
-
-@Schema()
+@Entity({ name: 'user' })
 export class User {
-  @Prop({ required: true })
+  @PrimaryColumn({ type: 'uuid', length: 36 })
+  id: string;
+  
+  @Column({ length: 120 })
   email: string;
 
-  @Prop({ required: true })
+  @Column({ length: 20 })
   phone: string;
 
-  @Prop()
+  @Column()
   isWaPhone: boolean;
 
-  @Prop()
-  isAdmPhone: boolean;
+  @Column({ length: 120 })
+  name: string;
 
-  @Prop({ required: true })
-  firstName: string;
-
-  @Prop()
-  midName: string;
-
-  @Prop({ required: true })
-  lastName: string;
-
-  @Prop({ default: true })
+  @Column()
   enable: boolean;
 
-  @Prop({ required: true })
-  username: string;
-
-  @Prop({ required: true })
+  @Column({ length: 100 })
   password: string;
 
-  @Prop({ required: true, default: 3 })
+  @Column({ length: 100, nullable: true })
+  codeForget: string;
+
+  @Column({ length: 120, nullable: true  })
+  emailVerifiedAt: string;
+
+  @Column({ default: 2 }) // 1 - ativo, 2 - pré cadastro, 3 - inativo
   status: number;
 
-  @Prop({ required: false, default: '' })
-  code: string;
-
-  @Prop({ default: 'user' })
+  @Column({ default: 'user' })
   accessLevel: string;
 
-  @Prop()
+  @Column({ nullable: true })
   observation: string;
 
-  @Prop({ type: Date })
+  @Column()
   createdAt: Date;
 
-  @Prop()
-  userCreatedId: string;
+  @ManyToOne(() => User, (user) => user.id)
+  userCreated: User;
 
-  @Prop({ type: Date })
+  @Column({ nullable: true })
   deletedAt: Date;
 
-  @Prop()
-  userDeletedId: string;
+  @ManyToOne(() => User, (user) => user.id, { nullable: true })
+  userDeleted: User;
 
-  @Prop({ type: Date })
+  @Column({ nullable: true })
   updatedAt: Date;
 
-  @Prop()
-  userUpdatedId: string;
+  @ManyToOne(() => User, (user) => user.id, { nullable: true })
+  userUpdated: User;
 }
 
-export const UserSchema = SchemaFactory.createForClass(User);

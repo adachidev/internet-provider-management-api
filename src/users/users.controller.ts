@@ -3,7 +3,6 @@ import {
   Get,
   Post,
   Body,
-  Patch,
   Param,
   Delete,
   Query,
@@ -11,9 +10,8 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
-import { JwtAuthGuard } from 'src/auth/shared/jwt-auth.guard';
+import { UserDto } from './dto/user.dto';
+import { JwtAuthGuard } from '../auth/shared/jwt-auth.guard';
 
 @Controller('users')
 export class UsersController {
@@ -21,8 +19,8 @@ export class UsersController {
 
   @UseGuards(JwtAuthGuard)
   @Post()
-  create(@Query('userId') userId: any, @Body() createUserDto: CreateUserDto) {
-    return this.usersService.create(userId, createUserDto);
+  create(@Query('userId') userId: any, @Body() dto: UserDto) {
+    return this.usersService.create(userId, dto);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -40,11 +38,11 @@ export class UsersController {
   @UseGuards(JwtAuthGuard)
   @Put(':id')
   update(
+    @Param('id') id: string,
     @Query('userId') userId: any,
-    @Param('id') id: any,
-    @Body() updateUserDto: UpdateUserDto,
+    @Body() dto: UserDto,
   ) {
-    return this.usersService.update(userId, id, updateUserDto);
+    return this.usersService.update(userId, id, dto);
   }
 
   @UseGuards(JwtAuthGuard)

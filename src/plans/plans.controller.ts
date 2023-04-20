@@ -3,15 +3,15 @@ import {
   Get,
   Post,
   Body,
-  Patch,
   Param,
   Delete,
   UseGuards,
   Put,
+  Query,
 } from '@nestjs/common';
 import { PlansService } from './plans.service';
-import { CreatePlanDto } from './dto/create-plan.dto';
-import { UpdatePlanDto } from './dto/update-plan.dto';
+import { PlanDto } from './dto/plan.dto';
+
 import { JwtAuthGuard } from 'src/auth/shared/jwt-auth.guard';
 
 @Controller('plans')
@@ -20,9 +20,11 @@ export class PlansController {
 
   @UseGuards(JwtAuthGuard)
   @Post()
-  create(@Body() createPlanDto: CreatePlanDto) {
-    console.log('[createPlanDto]', createPlanDto);
-    return this.plansService.create(createPlanDto);
+  create(
+    @Body() dto: PlanDto,
+    @Query('userId') userId: any,
+  ) {
+    return this.plansService.create(userId, dto);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -33,19 +35,28 @@ export class PlansController {
 
   @UseGuards(JwtAuthGuard)
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  findOne(
+    @Param('id') id: string,
+  ) {
     return this.plansService.findOne(id);
   }
 
   @UseGuards(JwtAuthGuard)
   @Put(':id')
-  update(@Param('id') id: string, @Body() updatePlanDto: UpdatePlanDto) {
-    return this.plansService.update(id, updatePlanDto);
+  update(
+    @Param('id') id: string,
+    @Query('userId') userId: any,
+    @Body() dto: PlanDto,
+  ) {
+    return this.plansService.update(userId, id, dto);
   }
 
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.plansService.remove(id);
+  remove(
+    @Param('id') id: string,
+    @Query('userId') userId: any,
+  ) {
+    return this.plansService.remove(userId, id);
   }
 }

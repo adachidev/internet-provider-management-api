@@ -1,66 +1,80 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
-import { User, UserDocument } from './entities/user.entity';
+import { UserDto } from './dto/user.dto';
 import * as bcrypt from 'bcrypt';
+import { InjectRepository } from '@nestjs/typeorm';
+import { User } from './entities/user.entity';
+import { Repository } from 'typeorm';
+import { plainToClass } from 'class-transformer';
+import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class UsersService {
-  constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
+  constructor(
+    @InjectRepository(User) private repository: Repository<User>,
+  ) {}
 
-  async create(userId: any, createUserDto: CreateUserDto): Promise<User> {
-    const isExists = await this.getByEmail(createUserDto.email);
+  async create(userId: any, dto: UserDto): Promise<User> {
+    
+    const isExists = await this.getByEmail(dto.email);
     if (isExists) throw new NotFoundException('User exists');
-    const user = new this.userModel(createUserDto);
+
+    const user = plainToClass(User, dto);
+    user.id = uuidv4();
     user.enable = true;
     user.createdAt = new Date();
-    user.userCreatedId = userId;
+    user.userCreated = plainToClass(User, await this.getById(userId));
     user.updatedAt = new Date();
-    user.userUpdatedId = userId;
-    user.status = 3;
-    user.password = await bcrypt.hash(createUserDto.password, 10);
-    const result = await user.save();
+    user.userUpdated = plainToClass(User, await this.getById(userId));
+    user.status = 2;
+    user.password = await bcrypt.hash(dto.password, 10);
+    
+    const result = await this.repository.save(user);
     return result;
   }
 
   async findAll() {
-    return await this.userModel.find();
+    return await this.repository.find();
   }
 
   async getById(id: string) {
-    return await this.userModel.findById(id);
+    return await this.repository.findOne({ where: { id } });
   }
 
   async getByEmail(email: string) {
-    return await this.userModel.findOne({ email });
+    return await this.repository.findOne({ where: { email } });
   }
 
-  async update(userId: any, id: any, updateUserDto: UpdateUserDto) {
-    updateUserDto.updatedAt = new Date();
-    updateUserDto.userUpdatedId = userId;
-    if (!!updateUserDto.password)
-      updateUserDto.password = await bcrypt.hash(updateUserDto.password, 10);
-    const result = await this.userModel.findByIdAndUpdate(id, updateUserDto, {
-      new: true,
-    });
+  async update(userId: any, id: string ,dto: UserDto) {
+    const entity = await this.repository.findOne({ where: { id } });
+
+    if (!entity) return 'USER_NOT_FOUND'
+    // if (entity.email != dto.email)
+    //   this.saveLog(userId, entity.id, entity.email, dto.email);
+
+    // if (!entity.password && entity.status === 3)
+    //   this.sendMailPreCadastro(entity);
+
+    const user = plainToClass(User, dto);
+    user.updatedAt = new Date();
+    user.userUpdated = plainToClass(User, await this.getById(userId));
+    
+    if (!!user.password)
+      user.password = await bcrypt.hash(user.password, 10);
+    
+    const result = await this.repository.save(user);
 
     if (!result) return 'USER_NOT_FOUND';
     return result;
   }
 
   async remove(userId: any, id: any) {
-    const user = new this.userModel();
+    const user = await this.repository.findOne(id);
+    if (!user) return 'USER_NOT_FOUND';
 
-    user.enable = false;
     user.deletedAt = new Date();
-    user.userDeletedId = userId;
-    const result = await this.userModel.findByIdAndUpdate(id, user, {
-      new: true,
-    });
+    user.userDeleted = plainToClass(User, await this.getById(userId));
 
-    if (!result) return 'USER_NOT_FOUND';
+    const result = await this.repository.save(user);
     return result;
   }
 }

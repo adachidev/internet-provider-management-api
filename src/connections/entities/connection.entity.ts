@@ -1,84 +1,84 @@
-import * as mongoose from 'mongoose';
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
-import { User } from 'src/users/entities/user.entity';
-import { Client } from 'src/clients/entities/client.entity';
-import { Box } from 'src/box/entities/box.entity';
-import { Plan } from 'src/plans/entities/plan.entity';
+import { Box } from "src/box/entities/box.entity";
+import { Client } from "src/clients/entities/client.entity";
+import { Plan } from "src/plans/entities/plan.entity";
+import { User } from "src/users/entities/user.entity";
+import { Column, Entity, ManyToOne, PrimaryColumn } from "typeorm";
 
-export type ConnectionDocument = Connection & Document;
-
-@Schema()
+@Entity({ name: 'connection' })
 export class Connection {
 
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Client' })
+  @PrimaryColumn({ type: 'uuid', length: 36 })
+  id: string;
+
+  @ManyToOne(() => Client, (client) => client.id)
   client: Client;
 
-  @Prop()
+  @Column()
+  clientId: string
+
+  @Column({ length: 36 })
   latitude: string;
 
-  @Prop()
+  @Column({ length: 36 })
   longitude: string;
 
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Box' })
-  box: Box;
+  // @ManyToOne(() => Box, (box) => box.id)
+  // box: Box;
 
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Plan' })
+  @Column()
+  boxId: string;
+
+  @ManyToOne(() => Plan, (plan) => plan.id)
   plan: Plan;
 
-  @Prop()
+  @Column()
+  planId: string;
+
+  @Column({ nullable: true })
   port: number;
 
-  @Prop()
-  signal: string;
+  @Column({ nullable: true })
+  signal: number;
 
-  @Prop({ required: true, default: 'ftth' })
+  @Column({ default: 'fttc' })
   type: string;
 
-  @Prop({ required: false })
+  @Column()
   username: string;
 
-  @Prop({ required: false })
+  @Column()
   password: string;
 
-  @Prop()
-  branch: string; // ramal
-
-  @Prop()
+  @Column({ nullable: true })
   ipV4Address: string;
 
-  @Prop({ default: false })
+  @Column({ default: false })
   ipV4AddressFixed: boolean;
 
-  @Prop()
+  @Column({ nullable: true })
   ipV6Address: string;
 
-  @Prop({ default: false })
+  @Column({ default: false })
   ipV6AddressFixed: boolean;
 
-  @Prop()
-  macAddress: string;
-
-  @Prop()
+  @Column({ nullable: true })
   observation: string;
 
-  @Prop()
+  @Column()
   createdAt: Date;
 
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' })
-  userCreatedId: User;
+  @ManyToOne(() => User, (user) => user.id, { nullable: true })
+  userCreated: User;
 
-  @Prop({ type: Date })
+  @Column({ nullable: true })
   deletedAt: Date;
 
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' })
-  userDeletedId: User;
+  @ManyToOne(() => User, (user) => user.id, { nullable: true })
+  userDeleted: User;
 
-  @Prop({ type: Date })
+  @Column({ nullable: true })
   updatedAt: Date;
 
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' })
-  userUpdatedId: User;
+  @ManyToOne(() => User, (user) => user.id, { nullable: true })
+  userUpdated: User;
 }
-
-export const ConnectionSchema = SchemaFactory.createForClass(Connection);

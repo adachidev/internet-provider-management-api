@@ -1,48 +1,49 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { CreatePlanDto } from './dto/create-plan.dto';
-import { UpdatePlanDto } from './dto/update-plan.dto';
-import { Plan, PlanDocument } from './entities/plan.entity';
+import { PlanDto } from './dto/plan.dto';
+import { Plan } from './entities/plan.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { plainToClass } from 'class-transformer';
+import { User } from 'src/users/entities/user.entity';
+import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class PlansService {
-  constructor(@InjectModel(Plan.name) private planModel: Model<PlanDocument>) {}
+  constructor(
+    @InjectRepository(Plan) private repository: Repository<Plan>,
+  ) {}
 
-  create(createPlanDto: CreatePlanDto) {
-    console.log('[createPlanDto]', createPlanDto);
-    const plan = new this.planModel(createPlanDto);
-    console.log('[plan]', plan);
-    return plan.save();
+  async create(userId: any, dto: PlanDto) {
+    const plan = plainToClass(Plan, dto);
+    plan.id = uuidv4();
+    plan.value = parseFloat(String(dto.value));
+    plan.createdAt = new Date();
+    // plan.userCreated = plainToClass(User, await this.findOne(userId));
+    const result = await this.repository.save(plan);
+    return result
   }
 
   findAll() {
-    return this.planModel.find();
+    return this.repository.find();
   }
 
   findOne(id: string) {
-    return this.planModel.findById(id);
+    return this.repository.findOne({ where: { id } });
   }
 
-  update(id: string, updatePlanDto: UpdatePlanDto) {
-    return this.planModel.findByIdAndUpdate(
-      {
-        _id: id,
-      },
-      {
-        $set: updatePlanDto,
-      },
-      {
-        new: true,
-      },
-    );
+  async update(userId: any, id: string, dto: PlanDto) {
+    const plan = plainToClass(Plan, dto);
+    plan.id = id;
+    plan.updatedAt = new Date();
+    // plan.userUpdated = plainToClass(User, await this.findOne(userId));
+    return this.repository.save(plan);
   }
 
-  remove(id: string) {
-    return this.planModel
-      .deleteOne({
-        _id: id,
-      })
-      .exec();
+  async remove(userId: any, id: string) {
+    const plan = await this.repository.findOne({ where: { id } });
+    if (plan.deletedAt) return null;
+    plan.deletedAt = new Date();
+    plan.userDeleted = plainToClass(User, await this.findOne(userId));
+    return this.repository.save(plan);
   }
 }

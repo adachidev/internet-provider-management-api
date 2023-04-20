@@ -1,77 +1,97 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { Box, BoxDocument } from 'src/box/entities/box.entity';
-import { CreateConnectionsDto } from './dto/create-connection.dto';
-import { Connection, ConnectionDocument } from './entities/connection.entity';
-import { ClientsService } from 'src/clients/clients.service';
+import { Connection } from './entities/connection.entity';
+import { ConnectionsDto } from './dto/connection.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { IsNull, Repository } from 'typeorm';
+import { Client } from 'src/clients/entities/client.entity';
+import { plainToClass } from 'class-transformer';
+import { User } from 'src/users/entities/user.entity';
 
 @Injectable()
 export class ConnectionsService {
   constructor(
-    @InjectModel(Connection.name)
-    private connectionModel: Model<ConnectionDocument>,
-    @InjectModel(Box.name) private boxModel: Model<BoxDocument>,
-    private readonly clientsService: ClientsService,
+    @InjectRepository(Connection) private repository: Repository<Connection>,
+    @InjectRepository(Client) private clientRepository: Repository<Client>,
   ) {}
 
   removeAccents(name: string) {
     return name.normalize('NFD').replace(/[\u0300-\u036f]/g, "")
   }
 
-  async create(userId: any, createConnectionsDto: CreateConnectionsDto) {
-    const isExists = await this.connectionModel
-      .findOne()
-      .where('box')
-      .equals(createConnectionsDto.box)
-      .where('port')
-      .equals(createConnectionsDto.port);
+  async create(userId: any, dto: ConnectionsDto) {
+    const box = await this.repository
+      .createQueryBuilder('c')
+      .innerJoinAndSelect('c.box', 'b', 'b.id = :boxId', { boxId: dto['box'].id })
 
-    if (!!isExists && !!createConnectionsDto.box && !!createConnectionsDto.port) return 'CONNECTION_EXISTS';
+    // if (!!box && box.port === dto.port) return 'CONNECTION_EXISTS';
 
-    const countPort = await this.boxModel.findById(createConnectionsDto.box);
+    // if (dto.port > box?.capacity)
+    //   return 'PORT_NOT_EXISTS';
 
-    const countUse = await this.connectionModel
-      .find()
-      .where('box')
-      .equals(createConnectionsDto.box);
+    // if (countUse.length > countPort?.capacity) return 'CAPACITY_SATURATION';
 
-    if (createConnectionsDto.port > countPort?.capacity)
-      return 'PORT_NOT_EXISTS';
-
-    if (countUse.length > countPort?.capacity) return 'CAPACITY_SATURATION';
-
-    const client = await this.clientsService.findOne(createConnectionsDto.client)
+    const client = await this.clientRepository.findOne({ where: { id: dto.clientId } })
     if (!client) return 'USER_NOT_EXISTS';
 
     let username = `${client.firstName.trim()}${client.lastName.trim()}`;
     username = this.removeAccents(username.toLowerCase())
+    
     let password = String(client.phone).trim()
-    const connection = new this.connectionModel(createConnectionsDto);
+
+    const connection = plainToClass(Connection, dto);
     connection.client = client
     connection.username = username
     connection.password = password
     connection.createdAt = new Date();
-    connection.userCreatedId = userId;
-    connection.updatedAt = new Date();
-    connection.userUpdatedId = userId;
+    connection.userCreated = plainToClass(User, await this.findOne(userId));
 
-    return await connection.save();
+    return await this.repository.save(connection);
   }
 
   async findAll() {
-    return this.connectionModel.find();
+    return this.repository.find({ where: { deletedAt: IsNull() }});
   }
 
-  async findByUser(id: string) {
-    return null//this.connectionModel.findById(id);
+  async findByClient(client: string) {
+    this.repository.find({ where: { client: { id: client } } });
   }
 
   async findOne(id: string) {
-    return this.connectionModel.findById(id);
+    this.repository.findOne({ where: { id } });
   }
 
   async findUserName(username: string) {
-    return this.connectionModel.findOne({ username }).populate('plan');
+    this.repository.findOne({ where: { username } });
   }
+
+  async update(userId: string, id: string, dto: ConnectionsDto) {
+    const isExists = await this.repository.findOne({ where: { id }})
+    if (!isExists) return 'NOT_FOUND'
+
+    const connection = plainToClass(Connection, dto);
+    connection.updatedAt = new Date();
+    connection.userUpdated = plainToClass(User, await this.findOne(userId));
+    connection.id = id
+    const res = await this.repository.save(connection);
+    return res;
+  }
+  
+  async remove(userId: string, id: string) {
+    const connection = await this.repository.findOne({ where: { id } });
+    if (connection.deletedAt) return null
+    
+    connection.deletedAt = new Date();
+    connection.userDeleted = plainToClass(User, await this.findOne(userId));
+    const result = await this.repository.save(connection);
+
+    // const movement = new this.movementModel();
+    // movement.clientId = id;
+    // movement.reason = 'Exclusão de cliente';
+    // movement.createdAt = new Date();
+    // movement.userCreatedId = userId;
+    // await movement.save();
+
+    return result;
+  }
+
 }

@@ -1,43 +1,42 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import { User } from "src/users/entities/user.entity";
+import { Column, Entity, ManyToOne, PrimaryColumn } from "typeorm";
 
-export type PlanDocument = Plan & Document;
-
-@Schema()
+@Entity({ name: 'plan' })
 export class Plan {
-  @Prop()
+  @PrimaryColumn({ type: 'uuid', length: 36 })
+  id: string;
+  
+  @Column({ length: 120 })
   name: string; // Nome do plano
 
-  @Prop()
+  @Column()
   value: number; // Valor
 
-  @Prop()
+  @Column()
   download: number; // Velocidade de Download
 
-  @Prop()
+  @Column()
   upload: number; // Velocidade de Upload
 
-  @Prop({ type: Date })
-  createdAt: Date;
-
-  @Prop()
-  userCreatedId: string;
-
-  @Prop({ type: Date })
-  deletedAt: Date;
-
-  @Prop()
-  userDeletedId: string;
-
-  @Prop({ type: Date })
-  updatedAt: Date;
-
-  @Prop()
-  userUpdatedId: string;
-
-  @Prop()
+  @Column()
   observation: string;
 
-}
+  @Column()
+  createdAt: Date;
 
-export const PlanSchema = SchemaFactory.createForClass(Plan);
+  @ManyToOne(() => User, (user) => user.id, { nullable: true })
+  userCreated: User;
+
+  @Column({ nullable: true })
+  deletedAt: Date;
+
+  @ManyToOne(() => User, (user) => user.id, { nullable: true })
+  userDeleted: User;
+
+  @Column({ nullable: true })
+  updatedAt: Date;
+
+  @ManyToOne(() => User, (user) => user.id, { nullable: true })
+  userUpdated: User;
+
+}

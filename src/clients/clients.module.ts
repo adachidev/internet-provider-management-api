@@ -1,18 +1,14 @@
 import { Module } from '@nestjs/common';
 import { ClientsService } from './clients.service';
 import { ClientsController } from './clients.controller';
-import { MongooseModule } from '@nestjs/mongoose';
-import { Client, ClientSchema } from './entities/client.entity';
-import {
-  Movement,
-  MovementSchema,
-} from 'src/movements/entities/movement.entity';
+import { Client } from './entities/client.entity';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { User } from 'src/users/entities/user.entity';
 
 @Module({
   imports: [
-    MongooseModule.forFeature([{ name: Client.name, schema: ClientSchema }]),
-    MongooseModule.forFeature([
-      { name: Movement.name, schema: MovementSchema },
+    TypeOrmModule.forFeature([
+      Client, User,
     ]),
   ],
   controllers: [ClientsController],

@@ -1,15 +1,17 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   Post,
+  Put,
   Query,
   UseGuards,
 } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/shared/jwt-auth.guard';
 import { ConnectionsService } from './connections.service';
-import { CreateConnectionsDto } from './dto/create-connection.dto';
+import { ConnectionsDto } from './dto/connection.dto';
 
 @Controller('connections')
 export class ConnectionsController {
@@ -19,9 +21,9 @@ export class ConnectionsController {
   @Post()
   create(
     @Query('userId') userId: string,
-    @Body() createConnectionsDto: CreateConnectionsDto,
+    @Body() dto: ConnectionsDto,
   ) {
-    return this.connectionsService.create(userId, createConnectionsDto);
+    return this.connectionsService.create(userId, dto);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -30,11 +32,10 @@ export class ConnectionsController {
     return this.connectionsService.findAll();
   }
 
-  
   @UseGuards(JwtAuthGuard)
   @Get('/client/:id')
   findByUser(@Param('id') id: string) {
-    return this.connectionsService.findByUser(id);
+    return this.connectionsService.findByClient(id);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -42,4 +43,21 @@ export class ConnectionsController {
   findOne(@Param('id') id: string) {
     return this.connectionsService.findOne(id);
   }
+
+  @UseGuards(JwtAuthGuard)
+  @Put(':id')
+  update(
+    @Query('userId') userId: string,
+    @Param('id') id: string,
+    @Body() dto: ConnectionsDto,
+  ) {
+    return this.connectionsService.update(userId, id, dto);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Delete(':id')
+  remove(@Query('userId') userId: any, @Param('id') id: string) {
+    return this.connectionsService.remove(userId, id);
+  }
+
 }

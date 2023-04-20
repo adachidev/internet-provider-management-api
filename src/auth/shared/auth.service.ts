@@ -3,6 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from 'src/users/users.service';
 import * as bcrypt from 'bcrypt';
+import * as jwt from 'jsonwebtoken';
 import { jwtConstants } from './constants';
 
 dotenv.config();
@@ -22,8 +23,8 @@ export class AuthService {
     if (user && !isPasswordValid) return { error: 'INVALID_PASSWORD'}
 
     if (user && isPasswordValid) {
-      const { _id, firstName, lastName, email } = user;
-      return { id: _id, firstName, lastName, email };
+      const { id, name, email } = user;
+      return { id, name, email };
     }
 
     return null;
@@ -32,15 +33,21 @@ export class AuthService {
   async login(user: any) {
     const payload = {
       email: user.email,
-      sub: user.id
+      sub: user.id,
+      name: user.name,
     };
+
+    const expiresIn = ''
+    const refreshToken = jwt.sign(payload, jwtConstants.secret, {expiresIn: '4h' })
+
     return {
       access_token: this.jwtService.sign(payload),
+      expires_in: expiresIn,
+      refresh_token: refreshToken,
       Issuer: process.env.ADMIN_URL,
       id: user.id,
       email: user.email,
-      firstName: user.firstName,
-      lastName: user.lastName,
+      name: user.name,
     };
   }
 

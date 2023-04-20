@@ -1,34 +1,48 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { CreateBoxDto } from './dto/create-box.dto';
-import { Box, BoxDocument } from './entities/box.entity';
+import { Box } from './entities/box.entity';
+import { BoxDto } from './dto/box.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { IsNull, Repository } from 'typeorm';
+import { v4 as uuidv4 } from 'uuid';
+import { plainToClass } from 'class-transformer';
+import { User } from 'src/users/entities/user.entity';
 
 @Injectable()
 export class BoxService {
-  constructor(@InjectModel(Box.name) private boxModel: Model<BoxDocument>) {}
+  constructor(
+    @InjectRepository(Box) private repository: Repository<Box>,  
+  ) {}
 
-  async create(userId: any, createBoxDto: CreateBoxDto) {
-    const isExists = await this.boxModel.findOne({
-      code: createBoxDto.code,
+  async create(userId: any, dto: BoxDto) {
+    const isExists = await this.repository.findOne({
+      where: {
+        description: dto.description
+      }
     });
 
-    if (isExists) return 'CODE_EXISTS';
+    if (isExists) return 'DESCRIPTION_EXISTS';
 
-    const box = new this.boxModel(createBoxDto);
+    const box = plainToClass(Box, dto);
+    box.id = uuidv4();
     box.createdAt = new Date();
-    box.userCreatedId = userId;
-    box.updatedAt = new Date();
-    box.userUpdatedId = userId;
+    box.userCreated = plainToClass(User, await this.findOne(userId));
 
-    return await box.save();
+    return await this.repository.save(box);
   }
 
   async findAll() {
-    return this.boxModel.find();
+    return this.repository.find({
+      where: {
+        deletedAt: IsNull()
+      }
+    });
   }
 
   async findOne(id: string) {
-    return this.boxModel.findById(id);
+    return this.repository.findOne({
+      where: {
+        id
+      }
+    });
   }
 }
