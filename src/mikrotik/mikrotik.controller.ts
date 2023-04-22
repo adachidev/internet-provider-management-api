@@ -21,6 +21,7 @@ export class MikrotikController {
   // @UseGuards(JwtAuthGuard)
   @Post('/connectionslog')
   create(
+    @Query('interface') inter: string,
     @Query('action') action: string,
     @Query('user') user: string,
     @Query('mac') mac: string,
@@ -31,6 +32,6 @@ export class MikrotikController {
     @Query('dhcpv6pd') dhcpv6pd: string,
     @Body() dto: any
   ) {
-    return this.mikrotikService.create(action, user, mac, nas, service, ipv4, remoteipv6, dhcpv6pd, dto)
+    return this.mikrotikService.create(inter, action, user, mac, nas, service, ipv4, remoteipv6, dhcpv6pd, dto)
   }
 }

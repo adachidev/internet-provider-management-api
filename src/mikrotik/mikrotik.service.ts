@@ -15,6 +15,7 @@ export class MikrotikService {
   ) {}
 
   async create(
+    inter: string,
     action: string,
     user: string,
     mac: string,
@@ -29,8 +30,8 @@ export class MikrotikService {
     console.log({action, user, mac, nas, service, ipv4, remoteipv6, dhcpv6pd, dto})
     const connectionsLog = plainToClass(ConnectionsLog, dto);
     connectionsLog.id = uuidv4();
-    connectionsLog.description = '';
-    connectionsLog.interface = '';
+    connectionsLog.description = action === 'u' ? 'Cliente Conectado' : action === 'd' ? 'Cliente Desconectado' : 'Action incorreto';
+    connectionsLog.interface = action === 'u' ? inter : '';
     connectionsLog.username = user;
     connectionsLog.userId = '';
     connectionsLog.ipv4 = ipv4;
