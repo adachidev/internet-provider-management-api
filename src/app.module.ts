@@ -8,6 +8,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { dataSourceOptions } from './database/data-source';
 import { ClientsModule } from './clients/clients.module';
 import { PlansModule } from './plans/plans.module';
+import { MikrotikModule } from './mikrotik/mikrotik.module';
 // import { BoxModule } from './box/box.module';
 // import { ConnectionsModule } from './connections/connections.module';
 
@@ -23,6 +24,7 @@ dotenv.config();
     UsersModule,
     ClientsModule,
     PlansModule,
+    MikrotikModule,
     // BoxModule,
     // ConnectionsModule,
     // MongooseModule.forRoot(
@@ -34,7 +36,7 @@ dotenv.config();
     // MovementsModule,
     // WaModule,
     // FinancialModule,
-    // MikrotikModule,
+    
   ],
   controllers: [],
   providers: [],
