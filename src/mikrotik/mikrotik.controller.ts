@@ -18,11 +18,10 @@ export class MikrotikController {
     private readonly mikrotikService: MikrotikService
   ) {}
 
-  @UseGuards(JwtAuthGuard)
-  @Post()
+  // @UseGuards(JwtAuthGuard)
+  @Post('/connectionslog')
   create(
     @Query('action') action: string,
-    @Query('token') token: string,
     @Query('user') user: string,
     @Query('mac') mac: string,
     @Query('nas') nas: string,
@@ -32,7 +31,6 @@ export class MikrotikController {
     @Query('dhcpv6pd') dhcpv6pd: string,
     @Body() dto: any
   ) {
-    console.log({action, token, user, mac, nas, service, ipv4, remoteipv6, dhcpv6pd, dto})
-    return null
+    return this.mikrotikService.create(action, user, mac, nas, service, ipv4, remoteipv6, dhcpv6pd, dto)
   }
 }
