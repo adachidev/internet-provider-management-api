@@ -34,4 +34,9 @@ export class MikrotikController {
   ) {
     return this.mikrotikService.create(inter, action, user, mac, nas, service, ipv4, remoteipv6, dhcpv6pd, dto)
   }
+
+  @Get('/connectionslog')
+  findAll() {
+    return this.mikrotikService.findAll()
+  }
 }

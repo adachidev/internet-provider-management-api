@@ -47,4 +47,8 @@ export class MikrotikService {
     return null
   }
 
+  async findAll() {
+    return this.repository.find()
+  }
+
 }
