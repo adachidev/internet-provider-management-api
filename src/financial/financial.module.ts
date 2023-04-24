@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
-import { FinancialService } from './financial.service';
 import { FinancialController } from './financial.controller';
 import { HttpModule } from '@nestjs/axios';
 import * as dotenv from 'dotenv';
+import { GerNetService } from './gernet.service';
 
 dotenv.config();
 
@@ -22,6 +22,6 @@ dotenv.config();
     // ),
   ],
   controllers: [FinancialController],
-  providers: [FinancialService],
+  providers: [GerNetService],
 })
 export class FinancialModule {}

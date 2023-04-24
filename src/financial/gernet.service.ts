@@ -1,6 +1,7 @@
 import * as dotenv from 'dotenv';
-import { HttpStatus, Injectable } from '@nestjs/common';
-import { CreateFinancialDto } from './dto/create-financial.dto';
+import { Cron, CronExpression } from '@nestjs/schedule';
+import * as moment from 'moment';
+import {Injectable, Logger } from '@nestjs/common';
 import { UpdateFinancialDto } from './dto/update-financial.dto';
 import { HttpService } from '@nestjs/axios';
 import { lastValueFrom } from 'rxjs';
@@ -11,12 +12,19 @@ import { resolve } from 'path';
 dotenv.config();
 
 @Injectable()
-export class FinancialService {
+export class GerNetService {
+  private readonly logger = new Logger(GerNetService.name);
+  
   constructor(private readonly httpService: HttpService) {}
+
+  public _api_url = process.env.GERNET_API
+  public _api_id = process.env.GERNET_CLIENT_ID
+  public _api_secret = process.env.GERNET_CLIENT_SECRET
+  public token = null
 
   async credentials(): Promise<any> {
     const credentials = Buffer.from(
-      `${process.env.GERNET_CLIENT_ID}: ${process.env.GERNET_CLIENT_SECRET}`,
+      `${this._api_id}:${this._api_secret}`,
     ).toString('base64');
 
     const httpsAgent = new Agent({
@@ -26,7 +34,7 @@ export class FinancialService {
       passphrase: '',
     });
 
-    const url = `${process.env.GERNET_API}/oauth/token`;
+    const url = `${this._api_url}/oauth/token`;
     const data = { grant_type: 'client_credentials' };
     const config = {
       headers: {
@@ -36,16 +44,21 @@ export class FinancialService {
       httpsAgent,
     };
 
-    const response = await lastValueFrom(
+    return await lastValueFrom(
       this.httpService.post(url, data, config),
     );
-    console.log(response.data);
-    // OK
-    return response.status === HttpStatus.ACCEPTED;
   }
 
-  create(createFinancialDto: CreateFinancialDto) {
-    return this.credentials();
+  async create() {
+    const res = await this.credentials();
+    console.log({res})
+    return res
+  }
+
+  @Cron(CronExpression.EVERY_5_SECONDS)//EVERY_DAY_AT_MIDNIGHT
+  async searchOverdue() {
+    this.logger.debug(`${moment().format()}:Init Schedule Financial`);
+    console.log('rodando')
   }
 
   findAll() {

@@ -34,7 +34,8 @@ export class OltService {
     return this.repository.find({
       where: {
         deletedAt: IsNull()
-      }
+      },
+      relations: ['bras'],
     });
   }
 

@@ -9,6 +9,9 @@ export class BoxDto {
   description: string;
 
   @IsString()
+  code: string;
+
+  @IsString()
   latitude: string;
 
   @IsString()

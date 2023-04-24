@@ -1,6 +1,8 @@
+import { Bras } from "src/bras/entities/bras.entity";
 import { User } from "src/users/entities/user.entity";
-import { Column, ManyToOne, PrimaryColumn } from "typeorm";
+import { Column, Entity, ManyToOne, PrimaryColumn } from "typeorm";
 
+@Entity({ name: 'olt' })
 export class Olt {
 
   @PrimaryColumn({ type: 'uuid', length: 36 })
@@ -32,6 +34,9 @@ export class Olt {
 
   @Column({ default: 36 })
   brasId: string;
+
+  @ManyToOne(() => Bras, (bras) => bras.id, { nullable: true })
+  bras: Bras;
 
   @Column()
   observation: string;

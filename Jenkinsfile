@@ -15,7 +15,7 @@ pipeline {
     GERNET_CLIENT_ID="Client_Id_f218688029becc399781622d6d39b1b333820d1f"
     GERNET_CLIENT_SECRET="Client_Secret_21f67dc3f3b8e8cc83cb24b02c3375d21898beb5"
     GERNET_CERT="homologacao-70759-ldfibra-tio-ms-homolog.p12"
-    NODEVERSION="18.13.0"
+    NODEVERSION="18.15.0"
   }
 
   stages {
@@ -37,6 +37,13 @@ pipeline {
         }
       }
     }
+
+    // stage('Bug correction'){
+    //   steps{
+    //     echo '....... Bug correction .......'
+    //     sh "sed -i '1d' node_modules/chap/lib/chap.ts"
+    //   }
+    // }
 
     stage('Deploy App'){
       steps{

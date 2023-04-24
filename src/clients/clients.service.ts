@@ -66,7 +66,7 @@ export class ClientsService {
 
     const client = plainToClass(Client, dto);
     client.updatedAt = new Date();
-    client.userUpdated = plainToClass(User, await this.findOne(userId));
+    // client.userUpdated = plainToClass(User, await this.findOne(userId));
     client.id = id
 
     // if (client.firstName && client.lastName) {

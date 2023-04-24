@@ -14,6 +14,12 @@ export class CreateTableConnection1681856389975 implements MigrationInterface {
               isPrimary: true
             },
             {
+              name: 'status',
+              type: 'int',
+              length: '1',
+              default: '1'
+            },
+            {
               name: 'clientId',
               type: 'varchar',
               length: '36',
@@ -22,16 +28,19 @@ export class CreateTableConnection1681856389975 implements MigrationInterface {
               name: 'latitude',
               type: 'varchar',
               length: '36',
+              isNullable: true,
             },
             {
               name: 'longitude',
               type: 'varchar',
               length: '36',
+              isNullable: true,
             },
             {
               name: 'boxId',
               type: 'varchar',
               length: '36',
+              isNullable: true,
             },
             {
               name: 'planId',
@@ -41,12 +50,14 @@ export class CreateTableConnection1681856389975 implements MigrationInterface {
             {
               name: 'port',
               type: 'int',
+              isNullable: true,
             },
             {
               name: 'signal',
               type: 'decimal',
               length: '16,2',
               default: '0',
+              isNullable: true,
             },
             {
               name: 'type',
@@ -57,31 +68,37 @@ export class CreateTableConnection1681856389975 implements MigrationInterface {
               name: 'username',
               type: 'varchar',
               length: '120',
+              isNullable: true,
             },                
             {
               name: 'password',
               type: 'varchar',
               length: '120',
+              isNullable: true,
             },                
             {
               name: 'ipV4Address',
               type: 'varchar',
               length: '36',
+              isNullable: true,
             },                
             {
               name: 'ipV4AddressFixed',
               type: 'int',
               default: '0',
+              isNullable: true,
             },                
             {
               name: 'ipV6Address',
               type: 'varchar',
               length: '36',
+              isNullable: true,
             },                
             {
               name: 'ipV6AddressFixed',
               type: 'int',
               default: '0',
+              isNullable: true,
             },                
             {
               name: 'observation',

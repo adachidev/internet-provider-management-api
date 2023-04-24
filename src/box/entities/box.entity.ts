@@ -1,6 +1,9 @@
+import { Connection } from "src/connections/entities/connection.entity";
+import { Olt } from "src/olt/entities/olt.entity";
 import { User } from "src/users/entities/user.entity";
-import { Column, ManyToOne, PrimaryColumn } from "typeorm";
+import { Column, Entity, ManyToOne, OneToMany, PrimaryColumn } from "typeorm";
 
+@Entity({ name: 'box' })
 export class Box {
 
   @PrimaryColumn({ type: 'uuid', length: 36 })
@@ -8,6 +11,12 @@ export class Box {
 
   @Column({ length: 100 })
   description: string;
+
+  @Column({ length: 36 })
+  code: string;
+
+  @OneToMany(() => Connection, (connection) => connection.box)
+  connection: Connection
 
   @Column({ length: 36 })
   latitude: string;
@@ -27,8 +36,8 @@ export class Box {
   @Column()
   signal: number;
 
-  @Column()
-  olt: string;
+  @ManyToOne(() => Olt, (olt) => olt.id, { nullable: true })
+  olt: Olt;
 
   @Column()
   oltId: string;

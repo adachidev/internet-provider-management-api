@@ -60,4 +60,10 @@ export class ConnectionsController {
     return this.connectionsService.remove(userId, id);
   }
 
+  @UseGuards(JwtAuthGuard)
+  @Get('/freeconnection/:id')
+  freePort(@Param('id') id: string) {
+    return this.connectionsService.freePortById(id);
+  }
+
 }

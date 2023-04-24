@@ -31,7 +31,7 @@ export class Client {
   @Column({ nullable: true })
   lastName: string;
 
-  @Column({ default: true }) // 1 - pré cadastro, 2 - ativo, 3 - inativo
+  @Column({ default: 2 }) // 1 - pré cadastro, 2 - ativo, 3 - inativo
   status: number;
 
   @Column() // CPF ou CNPJ

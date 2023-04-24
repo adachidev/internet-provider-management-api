@@ -13,19 +13,22 @@ export class Connection {
   @ManyToOne(() => Client, (client) => client.id)
   client: Client;
 
+  @Column({ default: 1 }) // 1 - pré ativo, 2 - ativo, 3 - inativo
+  status: number;
+
   @Column()
   clientId: string
 
-  @Column({ length: 36 })
+  @Column({ nullable: true, length: 36 })
   latitude: string;
 
-  @Column({ length: 36 })
+  @Column({ nullable: true, length: 36 })
   longitude: string;
 
-  // @ManyToOne(() => Box, (box) => box.id)
-  // box: Box;
+  @ManyToOne(() => Box, (box) => box.id)
+  box: Box;
 
-  @Column()
+  @Column({ nullable: true })
   boxId: string;
 
   @ManyToOne(() => Plan, (plan) => plan.id)
@@ -43,16 +46,16 @@ export class Connection {
   @Column({ default: 'fttc' })
   type: string;
 
-  @Column()
+  @Column({ nullable: true })
   username: string;
 
-  @Column()
+  @Column({ nullable: true })
   password: string;
 
   @Column({ nullable: true })
   ipV4Address: string;
 
-  @Column({ default: false })
+  @Column({ nullable: true, default: false })
   ipV4AddressFixed: boolean;
 
   @Column({ nullable: true })

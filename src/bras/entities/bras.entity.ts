@@ -1,6 +1,7 @@
 import { User } from "src/users/entities/user.entity";
-import { Column, ManyToOne, PrimaryColumn } from "typeorm";
+import { Column, Entity, ManyToOne, PrimaryColumn } from "typeorm";
 
+@Entity({ name: 'bras' })
 export class Bras {
 
   @PrimaryColumn({ type: 'uuid', length: 36 })

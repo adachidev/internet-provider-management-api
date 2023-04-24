@@ -34,7 +34,7 @@ export class BrasService {
     return this.repository.find({
       where: {
         deletedAt: IsNull()
-      }
+      },
     });
   }
 

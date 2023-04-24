@@ -13,6 +13,9 @@ export class ConnectionsDto {
   clientId: string;
 
   @IsString()
+  status: number;
+
+  @IsString()
   latitude: string;
 
   @IsString()

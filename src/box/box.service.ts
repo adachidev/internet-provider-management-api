@@ -31,11 +31,14 @@ export class BoxService {
   }
 
   async findAll() {
-    return this.repository.find({
+    const obj = await this.repository.find({
       where: {
         deletedAt: IsNull()
-      }
+      },
+      relations: ['olt','olt.bras'],
     });
+
+    return obj
   }
 
   async findOne(id: string) {

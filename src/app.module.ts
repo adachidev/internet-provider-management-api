@@ -9,8 +9,9 @@ import { dataSourceOptions } from './database/data-source';
 import { ClientsModule } from './clients/clients.module';
 import { PlansModule } from './plans/plans.module';
 import { MikrotikModule } from './mikrotik/mikrotik.module';
-// import { BoxModule } from './box/box.module';
-// import { ConnectionsModule } from './connections/connections.module';
+import { BoxModule } from './box/box.module';
+import { ConnectionsModule } from './connections/connections.module';
+import { FinancialModule } from './financial/financial.module';
 
 dotenv.config();
 
@@ -25,18 +26,11 @@ dotenv.config();
     ClientsModule,
     PlansModule,
     MikrotikModule,
-    // BoxModule,
-    // ConnectionsModule,
-    // MongooseModule.forRoot(
-    //   `mongodb://${process.env.MONGO_USER}:${process.env.MONGO_PASS}@${process.env.MONGO_URL}:${process.env.MONGO_PORT}`,
-    //   {
-    //     dbName: process.env.MONGO_DB,
-    //   },
-    // ),
+    BoxModule,
+    ConnectionsModule,
+    FinancialModule,
     // MovementsModule,
     // WaModule,
-    // FinancialModule,
-    
   ],
   controllers: [],
   providers: [],
