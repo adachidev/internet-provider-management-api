@@ -9,8 +9,9 @@ baseado em https://blog.remontti.com.br/3931
 
 ```
 {
-  :global URL "http://192.168.111.104:3002/mikrotik/connectionslog";
-  :global checkconnection "192.168.111.104";
+  
+  :global URL "http://192.168.111.106:3002/mikrotik/connectionslog";
+  :global checkconnection "192.168.111.106";
   :local ii 0;
   :local tt 300; # Aguarda até 5min para tentar 
 
@@ -39,14 +40,14 @@ baseado em https://blog.remontti.com.br/3931
 
   if ($i = $t) do={
 
-    :log warning message="CLIENTE CONECTADO > SEND TO TIO API :  $user | $callerId | $calledId | $remoteAddr | $localAddr | $RemoteIPv6 | NULL"
-    /tool fetch url="$URL" http-data="interface=interfaceName&action=u&user=$user&mac=$callerId&nas=$localAddr&service=$calledId&ipv4=$remoteAddr&remoteipv6=$RemoteIPv6" http-method=post
+    :log warning message="[TIO API] CLIENTE CONECTADO :  $user | $callerId | $calledId | $remoteAddr | $localAddr | $RemoteIPv6 | NULL"
+    /tool fetch url="$URL" http-data="interface=$interfaceName&action=c&user=$user&mac=$callerId&nas=$localAddr&service=$calledId&ipv4=$remoteAddr&remoteipv6=$RemoteIPv6" http-method=post
 
   } else={
 
     :local DHCPv6PD [/ipv6 dhcp-server binding get value-name=address [find server=$interfaceName]]
-    :log warning message="CLIENTE CONECTADO > SEND TO TIO API : $user | $callerId | $calledId | $remoteAddr | $localAddr | $RemoteIPv6 | $DHCPv6PD"
-    /tool fetch url="$URL" http-data="interface=interfaceName&action=u&user=$user&mac=$callerId&nas=$localAddr&service=$calledId&ipv4=$remoteAddr&remoteipv6=$RemoteIPv6&dhcpv6pd=$DHCPv6PD" http-method=post
+    :log warning message="[TIO API] CLIENTE CONECTADO : $user | $callerId | $calledId | $remoteAddr | $localAddr | $RemoteIPv6 | $DHCPv6PD"
+    /tool fetch url="$URL" http-data="interface=$interfaceName&action=c&user=$user&mac=$callerId&nas=$localAddr&service=$calledId&ipv4=$remoteAddr&remoteipv6=$RemoteIPv6&dhcpv6pd=$DHCPv6PD" http-method=post
 
   }
 }
@@ -55,10 +56,10 @@ baseado em https://blog.remontti.com.br/3931
 # script PPPOE Profile On DOWN
 ```
 {
-  :global URL "http://192.168.111.104:3002/mikrotik/connectionslog";
+  :global URL "http://192.168.111.106:3002/mikrotik/connectionslog";
   :local localAddr $"local-address"
   :local callerId $"caller-id"
   /tool fetch url="$URL" http-data="action=d&user=$user&mac=$callerId&nas=$localAddr" http-method=post
-  :log warning message="DOWN: $user | $callerId | $localAddr"
+  :log warning message="CLIENTE DESCONECTADO: $user | $callerId | $localAddr"
 }
 
