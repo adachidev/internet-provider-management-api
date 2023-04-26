@@ -13,7 +13,7 @@ export class Connection {
   @ManyToOne(() => Client, (client) => client.id)
   client: Client;
 
-  @Column({ default: 1 }) // 1 - pré ativo, 2 - ativo, 3 - inativo
+  @Column({ default: 1 }) // 1 - pré ativo, 2 - ativo, 3 - bloqueado
   status: number;
 
   @Column()
@@ -31,11 +31,23 @@ export class Connection {
   @Column({ nullable: true })
   boxId: string;
 
+  @Column({ nullable: true })
+  daysAfterExpiration: number;
+
+  @Column({ nullable: true })
+  blockDate: Date;
+
   @ManyToOne(() => Plan, (plan) => plan.id)
   plan: Plan;
 
-  @Column()
+  @Column({ nullable: true })
   planId: string;
+
+  @Column({ nullable: true })
+  dueDate: number;
+
+  @Column()
+  observationDate: Date;
 
   @Column({ nullable: true })
   port: number;

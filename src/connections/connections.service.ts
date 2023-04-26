@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { Connection } from './entities/connection.entity';
 import { ConnectionsDto } from './dto/connection.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -9,9 +9,13 @@ import { User } from 'src/users/entities/user.entity';
 import { Box } from 'src/box/entities/box.entity';
 import { v4 as uuidv4 } from 'uuid';
 import { Plan } from 'src/plans/entities/plan.entity';
+import { Cron, CronExpression } from '@nestjs/schedule';
+import * as moment from 'moment';
 
 @Injectable()
 export class ConnectionsService {
+  private readonly logger = new Logger(ConnectionsService.name);
+  
   constructor(
     @InjectRepository(Connection) private repository: Repository<Connection>,
     @InjectRepository(Client) private clientRepository: Repository<Client>,
@@ -150,6 +154,41 @@ export class ConnectionsService {
         name: `Porta ${el}`,
       }
     })
+  }
+
+  async blockConnection(id: string) {
+    const dto = await this.repository.findOne({ where: { id }})
+    if (!dto) return false
+
+    const connection = plainToClass(Connection, dto);
+    
+    connection.blockDate = new Date();
+    connection.status = 3;
+    return await this.repository.save(connection);
+  }
+
+  @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)//EVERY_10_SECONDS
+  async processDueDate() {
+    this.logger.debug(`Schedule Check Due Date`)
+    
+    const currentDate = new Date();
+    
+    const currentDay = currentDate.getDate();
+
+    const connections = await this.repository
+      .createQueryBuilder('c')
+      .innerJoinAndSelect('c.plan', 'p')
+      .getMany()
+
+      for (const conn of connections) {
+        const { id, daysAfterExpiration, dueDate } = conn;
+        //observationDate
+        if (currentDay === daysAfterExpiration + dueDate)
+          await this.blockConnection(id)
+
+      }
+
+      
   }
 
 }

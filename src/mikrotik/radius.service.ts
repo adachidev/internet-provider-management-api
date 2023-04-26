@@ -1,4 +1,4 @@
-import { Injectable, OnModuleInit } from '@nestjs/common';
+import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import * as radius from 'radius';
 import * as dotenv from 'dotenv';
 import { createSocket } from 'node:dgram';
@@ -12,6 +12,8 @@ dotenv.config();
 
 @Injectable()
 export class RadiusService implements OnModuleInit {
+  private readonly logger = new Logger(RadiusService.name);
+  
   constructor(
     @InjectRepository(Connection) private connectionRepository: Repository<Connection>,
   ) {}
@@ -75,7 +77,7 @@ export class RadiusService implements OnModuleInit {
           
           if (username == connection?.username && !!validPassword) {
 
-            const velocid = `${connection?.plan?.upload}M/${connection?.plan?.download}M`;
+            const velocid = `${connection?.plan?.upload}/${connection?.plan?.download}`;
 
             // https://wiki.mikrotik.com/wiki/Manual:RADIUS_Client/vendor_dictionary
           
@@ -96,8 +98,11 @@ export class RadiusService implements OnModuleInit {
                 ],
               ],
             });
+
+            this.logger.debug(`radius server accept user ${username}`);
           }
           else {
+            this.logger.debug(`radius server reject user ${username}`);
             response = radius.encode_response({
               packet,
               code: 'Access-Reject',
@@ -123,7 +128,7 @@ export class RadiusService implements OnModuleInit {
 
     this.server.on('listening', () => {
       const address = this.server.address();
-      console.log(`radius server listening ${address.address}:${address.port}`);
+      this.logger.debug(`radius server listening ${address.address}:${address.port}`);
     }); // -- listening
 
     this.server.bind(this.port);

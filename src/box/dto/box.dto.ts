@@ -1,4 +1,5 @@
 import { IsDate, IsNumber, IsString } from 'class-validator';
+import { OltDto } from 'src/olt/dto/olt.dto';
 import { UserDto } from 'src/users/dto/user.dto';
 
 export class BoxDto {
@@ -29,8 +30,7 @@ export class BoxDto {
   @IsString()
   signal: string;
 
-  @IsString()
-  olt: string;
+  olt: OltDto;
 
   @IsString()
   oltId: string;

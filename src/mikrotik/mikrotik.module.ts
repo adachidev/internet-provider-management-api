@@ -10,7 +10,7 @@ import { Connection } from 'src/connections/entities/connection.entity';
 @Module({
   imports: [
     TypeOrmModule.forFeature([
-      ConnectionsLog, Connection
+      ConnectionsLog, Connection, Client
     ]),
   ],
   controllers: [MikrotikController],

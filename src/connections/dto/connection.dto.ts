@@ -1,5 +1,5 @@
 import { PlanDto } from './../../plans/dto/plan.dto';
-import { IsDate, IsString } from "class-validator";
+import { IsDate, IsNumber, IsString } from "class-validator";
 import { BoxDto } from "src/box/dto/box.dto";
 import { ClientDto } from 'src/clients/dto/client.dto';
 
@@ -12,7 +12,7 @@ export class ConnectionsDto {
   @IsString()
   clientId: string;
 
-  @IsString()
+  @IsNumber()
   status: number;
 
   @IsString()
@@ -21,15 +21,29 @@ export class ConnectionsDto {
   @IsString()
   longitude: string;
 
+  box: BoxDto;
+  
   @IsString()
   boxId: string;
+
+  @IsNumber()
+  daysAfterExpiration: number;
+
+  @IsDate()
+  blockDate: Date;
 
   plan: PlanDto;
 
   @IsString()
   planId: string;
 
-  @IsString()
+  @IsNumber()
+  dueDate: number;
+
+  @IsDate()
+  observationDate: Date;
+
+  @IsNumber()
   port: number;
 
   @IsString()

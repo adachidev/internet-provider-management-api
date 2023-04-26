@@ -12,14 +12,16 @@ import { MikrotikModule } from './mikrotik/mikrotik.module';
 import { BoxModule } from './box/box.module';
 import { ConnectionsModule } from './connections/connections.module';
 import { FinancialModule } from './financial/financial.module';
+import { ScheduleModule } from '@nestjs/schedule';
 
 dotenv.config();
 
 @Module({
   imports: [
+    ScheduleModule.forRoot(),
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'public'),
-    }),
+    }),    
     TypeOrmModule.forRoot(dataSourceOptions),
     AuthModule,
     UsersModule,

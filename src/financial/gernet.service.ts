@@ -55,11 +55,11 @@ export class GerNetService {
     return res
   }
 
-  @Cron(CronExpression.EVERY_5_SECONDS)//EVERY_DAY_AT_MIDNIGHT
-  async searchOverdue() {
-    this.logger.debug(`${moment().format()}:Init Schedule Financial`);
-    console.log('rodando')
-  }
+  // @Cron(CronExpression.EVERY_5_SECONDS)//EVERY_DAY_AT_MIDNIGHT
+  // async searchOverdue() {
+  //   this.logger.debug(`${moment().format()}:Init Schedule Financial`);
+  //   console.log('rodando')
+  // }
 
   findAll() {
     // process.env.MONGO_USER

@@ -1,4 +1,5 @@
 import { IsBoolean, IsDate, IsNumber, IsString } from "class-validator";
+import { ConnectionsDto } from "src/connections/dto/connection.dto";
 
 export class ConnectionsLogDto {
   @IsString()
@@ -13,14 +14,25 @@ export class ConnectionsLogDto {
   @IsString()
   username: string;
 
+  @IsString()
+  connectDate: Date;
+
+  @IsString()
+  disconnectionDate: Date;
+
+  connection: ConnectionsDto;
+  
   @IsBoolean()
-  userId: string;
+  connectionId: string;
 
   @IsBoolean()
   ipv4: string;
 
   @IsString()
-  ipv6: string;
+  ipv6lan: string;
+
+  @IsString()
+  ipv6wan: string;
 
   @IsString()
   mac: string;

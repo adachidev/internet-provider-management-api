@@ -1,4 +1,5 @@
 import { IsDate, IsNumber, IsString } from 'class-validator';
+import { BrasDto } from 'src/bras/dto/bras.dto';
 import { UserDto } from 'src/users/dto/user.dto';
 
 export class OltDto {
@@ -29,6 +30,8 @@ export class OltDto {
   @IsString()
   macmanager: string;
 
+  bras: BrasDto;
+  
   @IsString()
   brasId: string;
 
