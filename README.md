@@ -1,3 +1,6 @@
+# Compatibilidade
+- mikrotik >= v6.43
+
 # pppoe server
 check chap and mschap1
 unckeck pap and mschap2

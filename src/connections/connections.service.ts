@@ -167,7 +167,7 @@ export class ConnectionsService {
     return await this.repository.save(connection);
   }
 
-  @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)//EVERY_10_SECONDS
+  @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)//EVERY_DAY_AT_MIDNIGHT  EVERY_10_SECONDS
   async processDueDate() {
     this.logger.debug(`Schedule Check Due Date`)
     

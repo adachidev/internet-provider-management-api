@@ -11,11 +11,13 @@ import {
 } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/shared/jwt-auth.guard';
 import { MikrotikService } from './mikrotik.service';
+import { RadiusService } from './radius.service';
 
 @Controller('mikrotik')
 export class MikrotikController {
   constructor(
-    private readonly mikrotikService: MikrotikService
+    private readonly mikrotikService: MikrotikService,
+    private readonly radiusService: RadiusService
   ) {}
 
   // @UseGuards(JwtAuthGuard)
@@ -29,5 +31,12 @@ export class MikrotikController {
   @Get('/connectionslog')
   findAll() {
     return this.mikrotikService.findAll()
+  }
+
+  @Post('disconnect/:id')
+  disconnectClient(
+    @Param('id') id: string
+  ) {
+    return this.radiusService.disconnectClient(id)
   }
 }
