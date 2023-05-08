@@ -34,9 +34,9 @@ export class MikrotikController {
   }
 
   @Post('disconnect/:id')
-  disconnectClient(
+  disconnectRequest(
     @Param('id') id: string
   ) {
-    return this.radiusService.disconnectClient(id)
+    return this.radiusService.disconnectRequest(id)
   }
 }
