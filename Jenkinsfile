@@ -4,12 +4,12 @@ pipeline {
   
   environment {
     API_PORT="3002"
-    MONGO_USER="ldfibra"
-    MONGO_PASS="L4ng0D1g1t4l"
-    MONGO_URL="mongodb"
-    MONGO_PORT="27017"
-    MONGO_DB="ldfibra-tio"
-    WA_URL="http://172.16.8.5:3000"
+    DB_USERNAME="ldfibra"
+    DB_PASSWORD="L4ng0D1g1t4l"
+    DB_HOST="172.16.16.4"
+    DB_PORT="3306"
+    DB_NAME="tio_dev"
+    WA_URL="http://172.16.16.4:3001"
     WA_PASS="LdF!br@2022"
     GERNET_API="https://api-pix-h.gerencianet.com.br"
     GERNET_CLIENT_ID="Client_Id_f218688029becc399781622d6d39b1b333820d1f"
@@ -54,12 +54,12 @@ pipeline {
 
   }
   
-  post {
-    success {
-      mail to: 'adachi.rodrigo@gmail.com', subject: 'Pipeline success', body: "${env.BUILD_URL}"
-    }
-		failure {
-			mail to: 'adachi.rodrigo@gmail.com', subject: 'Pipeline failed', body: "${env.BUILD_URL}"
-		}
-	}
+  // post {
+  //   success {
+  //     mail to: 'adachi.rodrigo@gmail.com', subject: 'Pipeline success', body: "${env.BUILD_URL}"
+  //   }
+	// 	failure {
+	// 		mail to: 'adachi.rodrigo@gmail.com', subject: 'Pipeline failed', body: "${env.BUILD_URL}"
+	// 	}
+	// }
 }
